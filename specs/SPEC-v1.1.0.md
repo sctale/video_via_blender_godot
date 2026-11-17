@@ -90,6 +90,8 @@ video **v1.1.0**。
 - 成片：`installation-robot-v1.1.0.mp4`，1920×1080、30fps、2630 帧、87.67s、H.264+AAC 48k，
   135.5MB；峰值 −3.4 dBFS、均值 −18 dB；无黑帧。
 - 附件：`poster-v1.1.0.png`、`contact_sheet-v1.1.0.png`。
+- 发布：https://github.com/sctale/video_via_blender_godot/releases/tag/v1.1.0
+  （video/poster/contact_sheet；v1.0.0 保留；方法 MIT、媒体 ARR）。
 
 ## 执行清单
 
@@ -98,4 +100,4 @@ video **v1.1.0**。
 - [x] Godot：IK 常量更新与抓取/落板数值验证
 - [x] 重建素材、关键帧视觉复核、镜头修正
 - [x] 1080p30 终渲 + 压制 + 抽帧验证
-- [ ] 同步开源仓库代码/SPEC/README；发布 Release v1.1.0
+- [x] 同步开源仓库代码/SPEC/README；发布 Release v1.1.0
