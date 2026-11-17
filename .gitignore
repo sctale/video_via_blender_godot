@@ -1,0 +1,25 @@
+# Generated demo media — All Rights Reserved, NOT part of the open-source repo
+installation-robot-v1.0.0.mp4
+*.mp4
+*.avi
+poster.png
+poster.jpg
+contact_sheet.png
+contact_sheet.jpg
+
+# Generated assets / audio / caches
+audio/
+blender/textures/
+blender/previews/
+godot/assets/models/
+godot/assets/textures/
+godot/data/
+godot/build/
+godot/.godot/
+release-assets/
+build/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini

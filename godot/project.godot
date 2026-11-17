@@ -1,0 +1,35 @@
+; Engine configuration file.
+; 丽天智能 MMR 光伏安装机器人示教视频 — Godot 4.7.2
+
+config_version=5
+
+[application]
+
+config/name="Litian MMR Demo"
+config/description="体素风格光伏组件安装机器人作业示教视频"
+run/main_scene="res://scenes/Main.tscn"
+config/features=PackedStringArray("4.7", "Forward Plus")
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/window_width_override=1920
+window/size/window_height_override=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+window/vsync/vsync_mode=0
+
+[editor]
+
+movie_writer/fps=30
+movie_writer/mjpeg_quality=0.92
+movie_writer/disable_vsync=true
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+anti_aliasing/quality/msaa_3d=2
+anti_aliasing/quality/screen_space_aa=0
+lights_and_shadows/directional_shadow/size=4096
+environment/defaults/default_clear_color=Color(0.46, 0.71, 0.94, 1)
