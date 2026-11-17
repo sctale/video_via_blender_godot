@@ -3,7 +3,7 @@ param([switch]$RebuildAssets)
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
-$ver = "1.3.0"
+$ver = "1.3.1"
 
 if ($RebuildAssets) {
     Write-Host "[1/5] Rebuild Blender assets ..."

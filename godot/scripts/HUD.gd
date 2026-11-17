@@ -182,7 +182,32 @@ func _draw_callouts() -> void:
 		box.position.x = clamp(box.position.x, 110, size.x - box.size.x - 110)
 		box.position.y = clamp(box.position.y, 120, size.y - box.size.y - 120)
 		var col := Color(ACCENT.r, ACCENT.g, ACCENT.b, a)
-		draw_line(sp, Vector2(lx, ly), Color(1, 1, 1, 0.55 * a), 2.0)
+		# 引线终点取“锚点→框中心”与框边界的交点：框被夹到画面内时也不会脱线
+		var center := box.get_center()
+		var dir := center - sp
+		var hit := center
+		var tn := 0.0
+		var tf := 1.0
+		var ok := true
+		if absf(dir.x) < 0.001:
+			if sp.x < box.position.x or sp.x > box.end.x:
+				ok = false
+		else:
+			var t1 := (box.position.x - sp.x) / dir.x
+			var t2 := (box.end.x - sp.x) / dir.x
+			tn = maxf(tn, minf(t1, t2))
+			tf = minf(tf, maxf(t1, t2))
+		if ok and absf(dir.y) < 0.001:
+			if sp.y < box.position.y or sp.y > box.end.y:
+				ok = false
+		elif ok:
+			var t3 := (box.position.y - sp.y) / dir.y
+			var t4 := (box.end.y - sp.y) / dir.y
+			tn = maxf(tn, minf(t3, t4))
+			tf = minf(tf, maxf(t3, t4))
+		if ok and tn > 0.001 and tn <= tf and tn <= 1.0:
+			hit = sp + dir * tn
+		draw_line(sp, hit, Color(1, 1, 1, 0.55 * a), 2.0)
 		draw_rect(Rect2(sp - Vector2(5, 5), Vector2(10, 10)), col, true)
 		_panel(box, Color(0.035, 0.06, 0.07, 0.8 * a), col, 2.0)
 		_text(Vector2(box.position.x + 18, box.position.y + 31), label, 24, Color(PAPER.r, PAPER.g, PAPER.b, a))
