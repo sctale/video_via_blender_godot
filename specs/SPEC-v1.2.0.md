@@ -87,7 +87,7 @@ v1.1.0 中圆形料仓拖车只是远处陈设：与机器人之间没有物理�
 - [x] Godot：料车挂接机器人、料台组件、抓取位姿/事件/镜头/HUD
 - [x] 静帧复核连接关系与穿模；修正镜头
 - [x] 1080p30 终渲 + 压制 + 抽帧/音频验证
-- [ ] 同步开源仓库、README/发布说明；发布 Release v1.2.0
+- [x] 同步开源仓库、README/发布说明；发布 Release v1.2.0
 
 ## 完成记录（v1.2.0）
 
@@ -110,4 +110,6 @@ v1.1.0 中圆形料仓拖车只是远处陈设：与机器人之间没有物理�
 - 成片：`installation-robot-v1.2.0.mp4`，1920×1080、30fps、2630 帧、87.67s、
   H.264+AAC 48k，145.56MB；峰值 −3.4 dBFS、均值 −18.0 dB；blackdetect 无 ≥0.15s 黑段。
 - 附件：`poster-v1.2.0.png`、`contact_sheet-v1.2.0.png`。
-- 发布：（待填）
+- 发布：https://github.com/sctale/video_via_blender_godot/releases/tag/v1.2.0
+  （mp4 152,630,747 B / poster.jpg 203,947 B / contact_sheet.jpg 336,802 B，HEAD 校验一致；
+  v1.0.0、v1.1.0 保留；方法 MIT、媒体 ARR）。
