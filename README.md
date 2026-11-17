@@ -7,6 +7,9 @@
 绿绑带、四轮黄毂），二次取料与自动换位循环安装；v1.3.1 修正设备标注引线与名称框脱线。
 成片与媒体仅作展示，**不开源**：见下方「开源范围」。
 
+另有一支同管线制作的《萌兽峡谷 TapArena》30 秒宣传片（体素演绎，含一段游戏实录）：
+[▶ taparena-promo-v1.0](https://github.com/sctale/video_via_blender_godot/releases/tag/taparena-promo-v1.0)
+
 [▶ 示例成片（Release）](https://github.com/sctale/video_via_blender_godot/releases/tag/v1.3.1) ·
 [下载视频](https://github.com/sctale/video_via_blender_godot/releases/latest) ·
 [实现记录（SPEC v1.2）](specs/SPEC-v1.2.0.md) ·
