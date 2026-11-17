@@ -5,14 +5,15 @@
 **用 Blender 程序化建模 + Godot 4 实时导演，制作体素风格产品视频的完整开源方法。**
 
 示例成片：丽天智能 MMR 光伏组件安装机器人 · 体素化原创演绎（1920×1080 / 30fps / 87.7s）。
-当前版本 **v1.2.0**：车尾牵引杆与随行料车挂钩对接，机械臂从料车旋转料台逐块取板安装。
+当前版本 **v1.2.1**：控制柜由后部设备舱承托，随行料车改为白色平板车斗 + 木托盘组件垛。
 成片与媒体仅作展示，**不开源**：见下方「开源范围」。
 
-[▶ 示例成片（Release）](https://github.com/sctale/video_via_blender_godot/releases/tag/v1.2.0) ·
+[▶ 示例成片（Release）](https://github.com/sctale/video_via_blender_godot/releases/tag/v1.2.1) ·
 [下载视频](https://github.com/sctale/video_via_blender_godot/releases/latest) ·
-[实现记录（SPEC v1.2）](specs/SPEC-v1.2.0.md)
+[实现记录（SPEC v1.2）](specs/SPEC-v1.2.0.md) ·
+[修正记录（SPEC v1.2.1）](specs/SPEC-v1.2.1.md)
 
-![示例成片海报](https://github.com/sctale/video_via_blender_godot/releases/download/v1.2.0/poster.jpg)
+![示例成片海报](https://github.com/sctale/video_via_blender_godot/releases/download/v1.2.1/poster.jpg)
 
 ---
 
@@ -87,7 +88,7 @@ godot --headless --path godot --import
 godot --path godot --fixed-fps 30 --write-movie build/final.avi
 ffmpeg -y -i godot/build/final.avi -i audio/mix.m4a -map 0:v:0 -map 1:a:0 \
   -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -ar 48000 \
-  -shortest installation-robot-v1.2.0.mp4
+  -shortest installation-robot-v1.2.1.mp4
 ```
 
 ## 目录
@@ -107,8 +108,8 @@ tools/
   mix_audio.py                 # 旁白铺轨 + BGM sidechain 混音
   render_video.ps1             # 终渲 + 压制 + 抽帧验证
   first_run.ps1                # 首次完整生成
-specs/SPEC.md, specs/SPEC-v1.1.0.md, specs/SPEC-v1.2.0.md  # 目标/分段/验收/实现记录
-docs/release-notes-v1.0.0.md, docs/release-notes-v1.1.0.md, docs/release-notes-v1.2.0.md  # Release 说明
+specs/SPEC.md, specs/SPEC-v1.1.0.md, specs/SPEC-v1.2.0.md, specs/SPEC-v1.2.1.md  # 目标/分段/验收/实现记录
+docs/release-notes-v1.0.0.md, docs/release-notes-v1.1.0.md, docs/release-notes-v1.2.0.md, docs/release-notes-v1.2.1.md  # Release 说明
 ```
 
 首次运行后，会生成（已被 `.gitignore` 排除、不属于本仓库源码）：

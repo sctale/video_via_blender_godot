@@ -471,7 +471,7 @@ func _build_hud() -> void:
 		"effector": effector,
 		"vision": vision_node,
 		"stack": stack_panels[2] if stack_panels.size() > 2 else chassis,
-		"trailer": trailer.find_child("Turntable", true, false),
+		"trailer": trailer.find_child("TrailerBody", true, false),
 	}
 	hud.setup(font, camera, timeline, anchors, grip)
 

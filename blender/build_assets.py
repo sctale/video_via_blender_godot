@@ -344,6 +344,14 @@ def build_robot():
             box(f"BodySeam_{x}_{y}", (0.012, 0.035, 0.56), (x, y, 1.7), dark, chassis)
         box(f"BodyHandle_{x}", (0.03, 0.3, 0.06), (x, 1.7, 1.62), dark, chassis)
     box("DeckPlate", (2.04, 3.95, 0.05), (0, 0, 2.015), silver, chassis)
+    # 后部设备舱：与主车身同宽，完整承托控制柜（消除柜体悬空）
+    box("RearBody", (2.0, 1.15, 0.62), (0, -2.56, 1.71), white, chassis)
+    box("RearBodyLowerTrim", (2.02, 1.17, 0.05), (0, -2.56, 1.41), dark, chassis)
+    box("RearSkirt", (2.0, 1.15, 0.45), (0, -2.56, 1.16), green, chassis)
+    box("RearDeckPlate", (2.04, 1.17, 0.05), (0, -2.56, 2.015), silver, chassis)
+    for x in (-1.006, 1.006):
+        box(f"RearBodySeam_{x}", (0.012, 0.035, 0.56), (x, -2.56, 1.7), dark, chassis)
+        box(f"RearSkirtVent_{x}", (0.02, 0.55, 0.12), (x, -2.56, 1.14), dark, chassis)
     # 后部控制柜（与实机同位置的白色大柜）
     box("Cabinet", (2.0, 0.75, 1.15), (0, -2.75, 2.6), white, chassis)
     box("CabinetTrim", (2.02, 0.77, 0.05), (0, -2.75, 2.04), dark, chassis)
@@ -381,6 +389,8 @@ def build_robot():
     decal("LogoCabRear", (1.0, 0.2), (0, -3.132, 2.82), rx_p, logo, chassis)
     decal("LogoBox_R", (0.42, 0.084), (0.912, 1.55, 2.22), side_p, logo, chassis)
     decal("LogoBox_L", (0.42, 0.084), (-0.912, 1.55, 2.22), side_n, logo, chassis)
+    decal("LogoRearBody_R", (0.9, 0.18), (1.012, -2.56, 1.72), side_p, logo, chassis)
+    decal("LogoRearBody_L", (0.9, 0.18), (-1.012, -2.56, 1.72), side_n, logo, chassis)
 
     # 转台：橙色防护布套基座
     turret = empty("Turret", (0, 0, 2.04), chassis)
@@ -496,31 +506,31 @@ def build_work_row_asset():
 
 def build_trailer_asset():
     reset_scene()
+    white = M("white", rough=0.7)
     green = M("green", rough=0.8)
     dark = M("dark", rough=0.9)
-    steel = M("steel", rough=0.4, metal=0.6)
-    yellow = M("yellow", rough=0.7)
+    steel = M("steel", rough=0.35, metal=0.7)
     wood = M("wood", rough=1.0)
     root = empty("PanelTrailer", (0, 0, 0))
-    # 可牵引平板车体：2.7 m 宽 × 3.2 m 长
-    box("TrailerBed", (2.7, 3.2, 0.18), (0, 0.4, 0.78), dark, root)
-    box("TrailerFrame", (2.8, 3.3, 0.08), (0, 0.4, 0.9), steel, root)
-    box("TrailerDeck", (2.6, 3.1, 0.05), (0, 0.4, 0.945), steel, root)
-    for x in (-1.34, 1.34):
-        box(f"SideRail_{x}", (0.08, 3.2, 0.14), (x, 0.4, 1.02), green, root)
-    for y in (-1.15, 1.95):
-        box(f"EndRail_{y}", (2.66, 0.08, 0.12), (0, y, 1.0), green, root)
-    # 双轴四轮 + 黄色轮毂 + 绿色挡泥板
+    # 白色平板料车：车斗直接承托木托盘（无旋转圆台）
+    box("TrailerFrame", (2.78, 3.28, 0.10), (0, 0.4, 0.89), dark, root)
+    box("TrailerBelly", (2.72, 3.22, 0.08), (0, 0.4, 0.98), green, root)
+    box("TrailerBody", (2.7, 3.2, 0.62), (0, 0.4, 1.33), white, root)
+    box("TrailerTopTrim", (2.72, 3.22, 0.06), (0, 0.4, 1.67), green, root)
+    box("TrailerDeck", (2.72, 3.22, 0.04), (0, 0.4, 1.72), steel, root)
+    for x in (-1.352, 1.352):
+        for y in (-0.7, 0.3, 1.3):
+            box(f"BodySeam_{x}_{y}", (0.014, 0.035, 0.56), (x, y, 1.33), dark, root)
+    for x in (-1.28, 1.28):
+        for y in (-1.12, 1.92):
+            box(f"Stake_{x}_{y}", (0.08, 0.08, 0.50), (x, y, 1.99), white, root)
+    # 双轴四轮：黑胎 + 银灰轮毂 + 白色挡泥板
     for y in (-0.35, 1.05):
         for x in (-1.2, 1.2):
             box(f"Tire_{x}_{y}", (0.55, 0.42, 0.55), (x, y, 0.36), dark, root)
-            box(f"Hub_{x}_{y}", (0.30, 0.46, 0.30), (x, y, 0.36), yellow, root)
-            box(f"Fender_{x}_{y}", (0.70, 0.86, 0.08), (x, y, 0.73), green, root)
-    # 16 边旋转料台（轴线竖直），木托盘承料
-    cyl("TurnBase", 1.0, 0.30, (0, 0.8, 1.12), dark, verts=16, parent=root)
-    cyl("TurnRing", 1.32, 0.10, (0, 0.8, 1.32), steel, verts=16, parent=root)
-    cyl("Turntable", 1.30, 0.30, (0, 0.8, 1.52), steel, verts=16, parent=root)
-    cyl("TurnRim", 1.36, 0.08, (0, 0.8, 1.70), green, verts=16, parent=root)
+            box(f"Hub_{x}_{y}", (0.30, 0.46, 0.30), (x, y, 0.36), steel, root)
+            box(f"Fender_{x}_{y}", (0.70, 0.86, 0.08), (x, y, 0.90), white, root)
+    # 木托盘 + 端板（组件由 Godot 生成）
     box("PalletBase", (2.4, 1.3, 0.08), (0, 0.8, 1.78), wood, root)
     for x in (-1.15, 0.0, 1.15):
         box(f"PalletRunner_{x}", (0.12, 1.34, 0.06), (x, 0.8, 1.73), wood, root)
