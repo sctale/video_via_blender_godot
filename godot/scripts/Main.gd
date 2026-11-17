@@ -113,14 +113,14 @@ func _build_timeline_data() -> void:
 		{"t": 0.0, "yaw": 0.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
 		{"t": 8.0, "yaw": 0.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
 		{"t": 23.66, "yaw": 0.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
-		{"t": 26.4, "yaw": 120.0, "d": 3.4, "h": 4.15, "pitch": 0.0},
-		{"t": 27.6, "yaw": 170.0, "d": 4.7, "h": 4.3, "pitch": 0.0},
-		{"t": 28.6, "yaw": 180.0, "d": 5.0, "h": 4.3, "pitch": 0.0},
-		{"t": 29.7, "yaw": 180.0, "d": 5.1, "h": 2.34, "pitch": 0.0},
-		{"t": 30.9, "yaw": 180.0, "d": 5.05, "h": 3.8, "pitch": 0.0},
-		{"t": 32.4, "yaw": 180.0, "d": 4.9, "h": 4.6, "pitch": 0.0},
-		{"t": 35.66, "yaw": 180.0, "d": 4.8, "h": 4.62, "pitch": 0.0},
-		{"t": 38.8, "yaw": 120.0, "d": 3.9, "h": 4.7, "pitch": 0.0},
+		{"t": 26.4, "yaw": 0.0, "d": 3.4, "h": 4.15, "pitch": 0.0},
+		{"t": 27.6, "yaw": 0.0, "d": 4.7, "h": 4.3, "pitch": 10.0},
+		{"t": 28.6, "yaw": 0.0, "d": 5.0, "h": 4.3, "pitch": 25.0},
+		{"t": 29.7, "yaw": 0.0, "d": 5.1, "h": 2.544, "pitch": 25.0},
+		{"t": 30.9, "yaw": 0.0, "d": 5.05, "h": 3.8, "pitch": 25.0},
+		{"t": 32.4, "yaw": 25.0, "d": 4.9, "h": 4.6, "pitch": 12.0},
+		{"t": 35.66, "yaw": 70.0, "d": 4.8, "h": 4.62, "pitch": 0.0},
+		{"t": 38.8, "yaw": 85.0, "d": 3.9, "h": 4.7, "pitch": 0.0},
 		{"t": 40.4, "yaw": 90.0, "d": 3.3, "h": 4.62, "pitch": 0.0},
 		{"t": 42.6, "yaw": 90.0, "d": 3.75, "h": 3.0, "pitch": 4.0},
 		{"t": 44.68, "yaw": 90.0, "d": 3.75, "h": 2.65, "pitch": 14.0},
@@ -133,15 +133,15 @@ func _build_timeline_data() -> void:
 		{"t": 58.4, "yaw": 90.0, "d": 3.75, "h": 2.3, "pitch": 6.0},
 		{"t": 60.8, "yaw": 90.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
 		{"t": 64.68, "yaw": 90.0, "d": 3.35, "h": 2.9, "pitch": 0.0},
-		{"t": 65.9, "yaw": 30.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
+		{"t": 65.9, "yaw": 50.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
 		{"t": 67.0, "yaw": 0.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
-		{"t": 68.0, "yaw": 120.0, "d": 3.4, "h": 4.0, "pitch": 0.0},
-		{"t": 69.0, "yaw": 170.0, "d": 4.7, "h": 4.25, "pitch": 0.0},
-		{"t": 69.6, "yaw": 180.0, "d": 5.05, "h": 4.0, "pitch": 0.0},
-		{"t": 70.2, "yaw": 180.0, "d": 5.1, "h": 2.22, "pitch": 0.0},
-		{"t": 71.1, "yaw": 180.0, "d": 5.05, "h": 3.7, "pitch": 0.0},
-		{"t": 71.9, "yaw": 160.0, "d": 4.7, "h": 4.4, "pitch": 0.0},
-		{"t": 72.6, "yaw": 100.0, "d": 3.6, "h": 4.4, "pitch": 0.0},
+		{"t": 68.0, "yaw": 0.0, "d": 3.4, "h": 4.0, "pitch": 10.0},
+		{"t": 69.0, "yaw": 0.0, "d": 4.7, "h": 4.25, "pitch": 20.0},
+		{"t": 69.6, "yaw": 0.0, "d": 5.05, "h": 4.0, "pitch": 25.0},
+		{"t": 70.2, "yaw": 0.0, "d": 5.155, "h": 2.426, "pitch": 25.0},
+		{"t": 71.1, "yaw": 0.0, "d": 5.05, "h": 3.7, "pitch": 25.0},
+		{"t": 71.9, "yaw": 25.0, "d": 4.7, "h": 4.4, "pitch": 12.0},
+		{"t": 72.6, "yaw": 70.0, "d": 3.6, "h": 4.4, "pitch": 0.0},
 		{"t": 73.3, "yaw": 90.0, "d": 3.2, "h": 2.95, "pitch": 4.0},
 		{"t": 73.9, "yaw": 90.0, "d": 3.8, "h": 2.0, "pitch": 16.0},
 		{"t": 74.5, "yaw": 90.0, "d": 3.8, "h": 1.46, "pitch": 20.0},
@@ -158,27 +158,27 @@ func _build_timeline_data() -> void:
 		{"t": 74.9, "action": "detach"},
 	]
 	shots = [
-		{"t0": 0.0, "t1": 8.0, "p0": Vector3(24, 8, 32), "p1": Vector3(17, 5.5, 24),
-		 "l0": Vector3(0.2, 1.5, 6.5), "l1": Vector3(0.4, 1.7, 6.5), "f0": 40.0, "f1": 37.0},
-		{"t0": 8.0, "t1": 23.66, "orbit": true, "c": Vector3(3.8, 0, 11.2),
-		 "r0": 15.5, "r1": 13.5, "a0": deg_to_rad(-35.0), "a1": deg_to_rad(70.0),
-		 "h0": 5.2, "h1": 4.1, "l": Vector3(3.2, 1.9, 11.6), "f": 38.0},
-		{"t0": 23.66, "t1": 35.66, "p0": Vector3(9.0, 1.8, 15.8), "p1": Vector3(12.0, 5.8, 17.0),
-		 "l0": Vector3(3.8, 1.4, 13.2), "l1": Vector3(3.8, 2.9, 14.4), "f0": 46.0, "f1": 44.0},
-		{"t0": 35.66, "t1": 44.68, "p0": Vector3(10.8, 8.0, 9.5), "p1": Vector3(9.5, 7.5, 4.8),
+		{"t0": 0.0, "t1": 8.0, "p0": Vector3(23, 8, 0.0), "p1": Vector3(17, 5.5, 2.5),
+		 "l0": Vector3(2.0, 1.5, 7.0), "l1": Vector3(2.2, 1.7, 7.0), "f0": 40.0, "f1": 37.0},
+		{"t0": 8.0, "t1": 23.66, "orbit": true, "c": Vector3(3.8, 0, 7.2),
+		 "r0": 15.5, "r1": 13.5, "a0": deg_to_rad(-45.0), "a1": deg_to_rad(15.0),
+		 "h0": 5.2, "h1": 4.1, "l": Vector3(3.2, 1.9, 7.4), "f": 38.0},
+		{"t0": 23.66, "t1": 35.66, "p0": Vector3(12.0, 2.4, 5.8), "p1": Vector3(13.8, 6.0, 2.4),
+		 "l0": Vector3(3.8, 1.8, 4.9), "l1": Vector3(3.8, 3.5, 4.7), "f0": 42.0, "f1": 42.0},
+		{"t0": 35.66, "t1": 44.68, "p0": Vector3(10.5, 7.5, 1.0), "p1": Vector3(9.0, 6.8, 5.5),
 		 "follow": true, "loff": Vector3(0, 0.1, 0), "f": 40.0},
 		{"t0": 44.68, "t1": 55.68, "p0": Vector3(2.2, 3.3, 5.9), "p1": Vector3(1.9, 3.1, 6.3),
 		 "l0": Vector3(0.4, 1.85, 10.0), "l1": Vector3(0.35, 1.8, 10.0), "f0": 33.0, "f1": 32.0},
 		{"t0": 55.68, "t1": 64.68, "p0": Vector3(3.4, 4.0, 4.8), "p1": Vector3(3.0, 3.7, 5.2),
 		 "l0": Vector3(0.4, 1.55, 10.0), "l1": Vector3(0.4, 1.5, 10.0), "f0": 33.0, "f1": 33.0},
-		{"t0": 64.68, "t1": 71.0, "p0": Vector3(15.0, 6.6, 14.2), "p1": Vector3(13.2, 6.0, 13.6),
-		 "l0": Vector3(3.8, 2.2, 13.0), "l1": Vector3(3.8, 2.4, 13.3), "f0": 40.0, "f1": 40.0},
-		{"t0": 71.0, "t1": 74.8, "p0": Vector3(13.0, 6.8, 12.8), "p1": Vector3(9.0, 5.8, 6.0),
+		{"t0": 64.68, "t1": 71.0, "p0": Vector3(15.0, 6.6, 3.2), "p1": Vector3(13.2, 6.0, 3.8),
+		 "l0": Vector3(3.8, 2.2, 4.5), "l1": Vector3(3.8, 2.4, 4.3), "f0": 40.0, "f1": 40.0},
+		{"t0": 71.0, "t1": 74.8, "p0": Vector3(13.0, 6.8, 4.6), "p1": Vector3(9.0, 5.8, 11.0),
 		 "follow": true, "loff": Vector3(0, 0.1, 0), "f": 40.0},
-		{"t0": 74.8, "t1": 79.68, "p0": Vector3(6.5, 3.8, 3.5), "p1": Vector3(7.5, 4.5, 1.0),
-		 "l0": Vector3(0.5, 1.5, 8.8), "l1": Vector3(0.5, 1.6, 8.6), "f0": 36.0, "f1": 36.0},
-		{"t0": 79.68, "t1": 87.68, "p0": Vector3(21, 9, 19), "p1": Vector3(31, 13, 31),
-		 "l0": Vector3(2, 1.5, 3), "l1": Vector3(2, 1.5, 2), "f0": 40.0, "f1": 42.0},
+		{"t0": 74.8, "t1": 77.2, "p0": Vector3(3.3, 4.2, 3.7), "p1": Vector3(3.1, 4.0, 4.1),
+		 "l0": Vector3(0.2, 1.55, 8.85), "l1": Vector3(0.2, 1.5, 8.8), "f0": 33.0, "f1": 33.0},
+		{"t0": 77.2, "t1": 87.68, "p0": Vector3(23, 10, 2), "p1": Vector3(32, 14, -4),
+		 "l0": Vector3(2, 1.5, 7), "l1": Vector3(2, 1.5, 7), "f0": 40.0, "f1": 42.0},
 	]
 
 
@@ -422,17 +422,21 @@ func _build_robot() -> void:
 	grip = robot.find_child("Grip", true, false)
 	vision_node = robot.find_child("EffectorCam", true, false)
 
-	# 随行料车：牵引杆与车尾挂钩相连；机器人换位时整体随动
+	# 随行料车：挂在控制柜相反的一端（−z），整台随机器人换位
 	trailer = load("res://assets/models/panel_trailer.glb").instantiate()
-	trailer.position = Vector3(0, 0, 5.9)
+	trailer.position = Vector3(0, 0, -5.582)
+	trailer.rotation_degrees.y = 180.0
 	robot.add_child(trailer)
 	_nearest_materials(trailer)
 
-	# 料台上的组件（Godot 生成，便于逐块拾取/隐藏）
+	# 倾斜料鼓上的组件（Godot 生成，便于逐块拾取/隐藏）
+	var tilt := deg_to_rad(25.0)
 	for i in 5:
 		var p := panel_scene.instantiate()
 		trailer.add_child(p)
-		p.position = Vector3(0, 1.86 + i * 0.12, -0.8)
+		var off := 0.2 + 0.13 * i
+		p.position = Vector3(0, 1.892 + cos(tilt) * off, -0.177 - sin(tilt) * off)
+		p.rotation.x = -tilt
 		_nearest_materials(p)
 		stack_panels.append(p)
 
@@ -471,7 +475,7 @@ func _build_hud() -> void:
 		"effector": effector,
 		"vision": vision_node,
 		"stack": stack_panels[2] if stack_panels.size() > 2 else chassis,
-		"trailer": trailer.find_child("TrailerBody", true, false),
+		"trailer": trailer.find_child("Drum", true, false),
 	}
 	hud.setup(font, camera, timeline, anchors, grip)
 
@@ -559,11 +563,12 @@ func _handle_events(t: float) -> void:
 
 
 func _attach_panel(stack_index: int, t: float) -> void:
+	var err := 0.0
 	if stack_index < stack_panels.size():
+		err = grip.global_position.distance_to(stack_panels[stack_index].global_position)
 		stack_panels[stack_index].visible = false
 	carried.visible = true
 	attached = true
-	var err := grip.global_position.distance_to(Vector3(ROBOT_X, 2.34 if stack_index == 4 else 2.22, robot.position.z + 5.1))
 	print("[attach t=%.2f] carried on, grip=%s err=%.3f" % [t, str(grip.global_position), err])
 
 

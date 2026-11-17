@@ -28,7 +28,7 @@ const CALL_OUTS := [
 	{"key": "arm", "label": "机械臂", "at": 13.4, "dx": 175.0, "dy": -90.0},
 	{"key": "effector", "label": "真空吸盘", "at": 16.0, "dx": 165.0, "dy": 80.0},
 	{"key": "vision", "label": "3D 视觉", "at": 18.6, "dx": -180.0, "dy": -95.0},
-	{"key": "trailer", "label": "随行料车", "at": 20.8, "dx": -200.0, "dy": -115.0},
+	{"key": "trailer", "label": "随行料车", "at": 20.8, "dx": -260.0, "dy": 70.0},
 ]
 
 
