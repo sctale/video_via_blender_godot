@@ -95,4 +95,7 @@
 - [x] D 成片：1920×1080 / 30fps / 2630 帧 / 87.669s / H.264 High + AAC 48k 立体声；
   峰值 −3.4 dBFS、均值 −18.0 dB；无 ≥0.15s 黑段；文件 153,250,496 B。
 - [x] D 产物：`installation-robot-v1.3.0.mp4`、`poster-v1.3.0.png`、`contact_sheet-v1.3.0.png`。
-- [ ] 仓库同步 + Release v1.3.0（待发布）。
+- [x] 仓库同步 + Release v1.3.0：单提交 `feat: v1.3.0` 已推送；Release 资产
+  `installation-robot-v1.3.0.mp4` 153,250,496 B（sha256 `68e9dd…b28a7`）、
+  `poster.jpg` 374,428 B、`contact_sheet.jpg` 633,932 B，本地/远端摘要一致；
+  v1.0.0–v1.2.1 保留。
