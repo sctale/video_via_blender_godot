@@ -82,7 +82,7 @@ v1.2.0 发布后用户指出：
 - [x] Godot/HUD：标注锚点改为 TrailerBody
 - [x] 预览/静帧复核（控制柜、料车、抓取、落板）
 - [x] 1080p30 终渲 + 压制 + 抽帧/音频验证
-- [ ] 同步仓库、README/发布说明；发布 Release v1.2.1
+- [x] 同步仓库、README/发布说明；发布 Release v1.2.1
 
 ## 完成记录（v1.2.1）
 
@@ -101,4 +101,6 @@ v1.2.0 发布后用户指出：
   H.264+AAC 48k，150,957,768 B（143.96 MB）；峰值 −3.4 dBFS、均值 −18.0 dB；
   blackdetect 无 ≥0.15s 黑段。
 - 附件：`poster-v1.2.1.png`、`contact_sheet-v1.2.1.png`。
-- 发布：（待填）
+- 发布：https://github.com/sctale/video_via_blender_godot/releases/tag/v1.2.1
+  （mp4 150,957,768 B / poster.jpg 201,947 B / contact_sheet.jpg 334,854 B，HEAD 校验一致；
+  v1.0.0、v1.1.0、v1.2.0 保留；方法 MIT、媒体 ARR）。
