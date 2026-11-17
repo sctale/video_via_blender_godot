@@ -33,5 +33,5 @@
 - [x] HUD 引线交点修正；t=14 / t=21.5 静帧复核通过。
 - [x] 重渲 + 压制 + 校验：2630 帧 / 87.669s / 153,213,346 B；峰值 −3.4 dBFS、均值 −18.0 dB；无 ≥0.15s 黑段。
 - [x] 仓库同步 + Release v1.3.1：资产 `installation-robot-v1.3.1.mp4`
-  sha256 `3e143b…8e4b`、`poster.jpg` 374,243 B、`contact_sheet.jpg` 633,933 B；
-  v1.3.0 及更早版本保留。
+  sha256 `3e143b…8e4b`、`poster.jpg` 374,243 B、`contact_sheet.jpg` 633,933 B。
+- [x] 按用户要求 2026-11-17 旧 Release（v1.0.0–v1.3.0）已删除，仅保留 v1.3.1。
