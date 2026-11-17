@@ -1,4 +1,6 @@
-# video_via_blender_godot
+# video_via_blender & godot
+
+> GitHub 仓库 slug 不支持 `&`，实际 URL 为 `video_via_blender_godot`。
 
 **用 Blender 程序化建模 + Godot 4 实时导演，制作体素风格产品视频的完整开源方法。**
 
