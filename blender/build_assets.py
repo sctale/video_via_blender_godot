@@ -364,13 +364,12 @@ def build_robot():
         box(f"SensorLens_{x}", (0.1, 0.02, 0.09), (x, 2.11, 2.1), glass, chassis)
     box("FrontBumper", (2.04, 0.12, 0.22), (0, 2.03, 1.32), white, chassis)
     box("FrontBumperGreen", (1.4, 0.03, 0.06), (0, 2.1, 1.32), green, chassis)
-    # 后部组件承载架（实机为料架/仓）
-    box("LoadPlatform", (2.46, 1.55, 0.1), (0, -1.8, 2.09), dark, chassis)
-    box("LoadPallet", (2.3, 1.3, 0.06), (0, -1.8, 2.17), M("wood", rough=1.0), chassis)
-    for x in (-1.26, 1.26):
-        box(f"LoadGuide_{x}", (0.08, 1.35, 0.5), (x, -1.8, 2.35), white, chassis)
-    box("LoadGate", (2.46, 0.06, 0.3), (0, -1.06, 2.3), white, chassis)
-    box("LoadGateTrim", (2.0, 0.02, 0.06), (0, -1.02, 2.36), green, chassis)
+    # 后部牵引：随行料车的牵引杆（车体本身不带料架）
+    box("RearHitchMount", (1.7, 0.22, 0.18), (0, -2.0, 0.62), dark, chassis)
+    box("RearDrawbar", (0.22, 1.15, 0.18), (0, -2.5, 0.55), steel, chassis)
+    box("RearCoupler", (0.40, 0.30, 0.24), (0, -2.95, 0.55), steel, chassis)
+    box("RearCouplerLatch", (0.16, 0.34, 0.10), (0, -2.95, 0.71), green, chassis)
+    box("RearCouplerPin", (0.08, 0.08, 0.26), (0, -2.95, 0.66), dark, chassis)
     # 品牌标识
     side_p = Matrix.Rotation(math.radians(90), 4, "Y") @ Matrix.Rotation(math.radians(90), 4, "Z")
     side_n = Matrix.Rotation(math.radians(-90), 4, "Y") @ Matrix.Rotation(math.radians(-90), 4, "Z")
@@ -502,38 +501,48 @@ def build_trailer_asset():
     steel = M("steel", rough=0.4, metal=0.6)
     yellow = M("yellow", rough=0.7)
     wood = M("wood", rough=1.0)
-    cells = M("panel", rough=0.5)
-    frame = M("panel_frame", rough=0.45, metal=0.4)
     root = empty("PanelTrailer", (0, 0, 0))
-    box("TrailerBed", (2.7, 1.5, 0.14), (0, 0, 0.78), dark, root)
-    box("TrailerFrame", (2.8, 1.6, 0.1), (0, 0, 0.9), steel, root)
-    box("TrailerGreenRail", (2.8, 0.08, 0.08), (0, 0.8, 0.96), green, root)
-    for x in (-1.15, 1.15):
-        for y in (-0.7, 0.7):
-            box(f"Tire_{x}_{y}", (0.55, 0.38, 0.55), (x, y, 0.36), dark, root)
-            box(f"Hub_{x}_{y}", (0.3, 0.42, 0.3), (x, y, 0.36), yellow, root)
-    box("Hitch", (0.1, 1.2, 0.1), (0, 1.9, 0.55), steel, root)
-    box("Jack", (0.1, 0.1, 0.45), (0, 2.3, 0.25), steel, root)
-    rot = Matrix.Rotation(math.radians(-25), 4, "X")
-    q = rot.to_quaternion()
-    drum_c = Vector((0, 0.05, 1.45))
-    cyl("Drum", 1.25, 0.5, tuple(drum_c), steel, verts=16, rot=q, parent=root)
-    cyl("DrumRim", 1.32, 0.08, tuple(drum_c + rot @ Vector((0, 0, 0.26))), dark, verts=16, rot=q, parent=root)
-    pallet_c = drum_c + rot @ Vector((0, 0, 0.3))
-    box("PalletBase", (2.4, 1.3, 0.08), tuple(pallet_c), wood, root, q)
-    base_center = pallet_c + rot @ Vector((0, 0, 0.08))
-    for i in range(4):
-        c = base_center + rot @ Vector((0, 0, 0.12 + 0.13 * i))
-        box(f"StackPanel_{i}", (2.4, 1.2, 0.09), tuple(c), frame, root, q)
-        top = c + rot @ Vector((0, 0, 0.055))
-        box(f"StackCells_{i}", (2.28, 1.08, 0.02), tuple(top), cells, root, q)
-    for x in (-0.8, 0.8):
-        c = base_center + rot @ Vector((x, 0, 0.48))
-        box(f"Strap_{x}", (0.12, 1.3, 0.05), tuple(c), green, root, q)
-    for x in (-1.1, 1.1):
-        c = pallet_c + rot @ Vector((x, 0, 0.4))
-        box(f"PalletEnd_{x}", (0.12, 1.3, 0.5), tuple(c), wood, root, q)
+    # 可牵引平板车体：2.7 m 宽 × 3.2 m 长
+    box("TrailerBed", (2.7, 3.2, 0.18), (0, 0.4, 0.78), dark, root)
+    box("TrailerFrame", (2.8, 3.3, 0.08), (0, 0.4, 0.9), steel, root)
+    box("TrailerDeck", (2.6, 3.1, 0.05), (0, 0.4, 0.945), steel, root)
+    for x in (-1.34, 1.34):
+        box(f"SideRail_{x}", (0.08, 3.2, 0.14), (x, 0.4, 1.02), green, root)
+    for y in (-1.15, 1.95):
+        box(f"EndRail_{y}", (2.66, 0.08, 0.12), (0, y, 1.0), green, root)
+    # 双轴四轮 + 黄色轮毂 + 绿色挡泥板
+    for y in (-0.35, 1.05):
+        for x in (-1.2, 1.2):
+            box(f"Tire_{x}_{y}", (0.55, 0.42, 0.55), (x, y, 0.36), dark, root)
+            box(f"Hub_{x}_{y}", (0.30, 0.46, 0.30), (x, y, 0.36), yellow, root)
+            box(f"Fender_{x}_{y}", (0.70, 0.86, 0.08), (x, y, 0.73), green, root)
+    # 16 边旋转料台（轴线竖直），木托盘承料
+    cyl("TurnBase", 1.0, 0.30, (0, 0.8, 1.12), dark, verts=16, parent=root)
+    cyl("TurnRing", 1.32, 0.10, (0, 0.8, 1.32), steel, verts=16, parent=root)
+    cyl("Turntable", 1.30, 0.30, (0, 0.8, 1.52), steel, verts=16, parent=root)
+    cyl("TurnRim", 1.36, 0.08, (0, 0.8, 1.70), green, verts=16, parent=root)
+    box("PalletBase", (2.4, 1.3, 0.08), (0, 0.8, 1.78), wood, root)
+    for x in (-1.15, 0.0, 1.15):
+        box(f"PalletRunner_{x}", (0.12, 1.34, 0.06), (x, 0.8, 1.73), wood, root)
+    for y in (0.15, 1.45):
+        box(f"PalletEnd_{y}", (2.4, 0.10, 0.70), (0, y, 2.05), wood, root)
+    # 前部 A 形牵引架 + 牵引环 + 锁扣 + 支撑腿 + 安全链
+    for sgn in (-1, 1):
+        ang = math.radians(36.0 * sgn)
+        q = Matrix.Rotation(ang, 4, "Z").to_quaternion()
+        box(f"Tongue_{sgn}", (0.16, 1.15, 0.14), (0.34 * sgn, 2.50, 0.72), steel, root, q)
+    box("TongueCross", (1.0, 0.16, 0.14), (0, 2.10, 0.72), steel, root)
+    for x in (-0.62, 0.62):
+        box(f"TonguePost_{x}", (0.12, 0.12, 0.26), (x, 2.06, 0.82), steel, root)
+    box("Coupler", (0.40, 0.36, 0.24), (0, 3.0, 0.58), steel, root)
+    box("CouplerLatch", (0.18, 0.38, 0.12), (0, 3.0, 0.73), green, root)
+    box("Jack", (0.14, 0.14, 0.26), (0.55, 2.62, 0.42), dark, root)
+    box("JackCrank", (0.28, 0.06, 0.06), (0.55, 2.62, 0.50), steel, root)
+    box("SafetyChain", (0.05, 0.72, 0.05), (-0.38, 2.55, 0.46), dark, root)
     export_glb(root, "panel_trailer.glb")
+    cam = setup_preview()
+    render_preview(cam, "trailer_three_quarter.png", (8.5, 9.5, 5.5), (0, 0.8, 1.2))
+    render_preview(cam, "trailer_side.png", (9.5, 0.8, 3.0), (0, 0.8, 1.2))
 
 
 def build_props():
@@ -635,6 +644,7 @@ def robot_previews(root):
     render_preview(cam, "robot_three_quarter.png", (9.5, 9.0, 6.2), (0, 0.6, 1.9))
     render_preview(cam, "robot_front.png", (0, 12.5, 3.2), (0, 0, 2.0))
     render_preview(cam, "robot_side.png", (11.0, 1.0, 3.0), (0, 0, 2.0))
+    render_preview(cam, "robot_rear.png", (9.0, -9.5, 4.2), (0, -1.4, 1.5))
 
 
 def scene_preview():

@@ -27,6 +27,7 @@ var worker_scene: PackedScene
 var rock_scene: PackedScene
 
 var robot: Node3D
+var trailer: Node3D
 var chassis: Node3D
 var turret: Node3D
 var arm_lower: Node3D
@@ -112,14 +113,15 @@ func _build_timeline_data() -> void:
 		{"t": 0.0, "yaw": 0.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
 		{"t": 8.0, "yaw": 0.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
 		{"t": 23.66, "yaw": 0.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
-		{"t": 26.4, "yaw": 170.0, "d": 2.0, "h": 3.7, "pitch": 0.0},
-		{"t": 27.6, "yaw": 180.0, "d": 1.85, "h": 3.35, "pitch": 0.0},
-		{"t": 29.7, "yaw": 180.0, "d": 1.8, "h": 2.73, "pitch": 0.0},
-		{"t": 30.9, "yaw": 180.0, "d": 1.75, "h": 3.3, "pitch": 0.0},
-		{"t": 32.4, "yaw": 180.0, "d": 1.55, "h": 4.55, "pitch": 0.0},
-		{"t": 35.66, "yaw": 180.0, "d": 1.6, "h": 4.6, "pitch": 0.0},
-		{"t": 38.8, "yaw": 120.0, "d": 2.0, "h": 4.68, "pitch": 0.0},
-		{"t": 40.4, "yaw": 90.0, "d": 2.3, "h": 4.6, "pitch": 0.0},
+		{"t": 26.4, "yaw": 120.0, "d": 3.4, "h": 4.15, "pitch": 0.0},
+		{"t": 27.6, "yaw": 170.0, "d": 4.7, "h": 4.3, "pitch": 0.0},
+		{"t": 28.6, "yaw": 180.0, "d": 5.0, "h": 4.3, "pitch": 0.0},
+		{"t": 29.7, "yaw": 180.0, "d": 5.1, "h": 2.34, "pitch": 0.0},
+		{"t": 30.9, "yaw": 180.0, "d": 5.05, "h": 3.8, "pitch": 0.0},
+		{"t": 32.4, "yaw": 180.0, "d": 4.9, "h": 4.6, "pitch": 0.0},
+		{"t": 35.66, "yaw": 180.0, "d": 4.8, "h": 4.62, "pitch": 0.0},
+		{"t": 38.8, "yaw": 120.0, "d": 3.9, "h": 4.7, "pitch": 0.0},
+		{"t": 40.4, "yaw": 90.0, "d": 3.3, "h": 4.62, "pitch": 0.0},
 		{"t": 42.6, "yaw": 90.0, "d": 3.75, "h": 3.0, "pitch": 4.0},
 		{"t": 44.68, "yaw": 90.0, "d": 3.75, "h": 2.65, "pitch": 14.0},
 		{"t": 47.6, "yaw": 90.0, "d": 3.8, "h": 2.15, "pitch": 18.0},
@@ -133,12 +135,13 @@ func _build_timeline_data() -> void:
 		{"t": 64.68, "yaw": 90.0, "d": 3.35, "h": 2.9, "pitch": 0.0},
 		{"t": 65.9, "yaw": 30.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
 		{"t": 67.0, "yaw": 0.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
-		{"t": 68.6, "yaw": 170.0, "d": 2.0, "h": 3.65, "pitch": 0.0},
-		{"t": 69.5, "yaw": 180.0, "d": 1.85, "h": 3.32, "pitch": 0.0},
-		{"t": 70.2, "yaw": 180.0, "d": 1.8, "h": 2.61, "pitch": 0.0},
-		{"t": 71.1, "yaw": 180.0, "d": 1.72, "h": 3.4, "pitch": 0.0},
-		{"t": 71.9, "yaw": 150.0, "d": 2.0, "h": 4.3, "pitch": 0.0},
-		{"t": 72.6, "yaw": 100.0, "d": 2.4, "h": 4.3, "pitch": 0.0},
+		{"t": 68.0, "yaw": 120.0, "d": 3.4, "h": 4.0, "pitch": 0.0},
+		{"t": 69.0, "yaw": 170.0, "d": 4.7, "h": 4.25, "pitch": 0.0},
+		{"t": 69.6, "yaw": 180.0, "d": 5.05, "h": 4.0, "pitch": 0.0},
+		{"t": 70.2, "yaw": 180.0, "d": 5.1, "h": 2.22, "pitch": 0.0},
+		{"t": 71.1, "yaw": 180.0, "d": 5.05, "h": 3.7, "pitch": 0.0},
+		{"t": 71.9, "yaw": 160.0, "d": 4.7, "h": 4.4, "pitch": 0.0},
+		{"t": 72.6, "yaw": 100.0, "d": 3.6, "h": 4.4, "pitch": 0.0},
 		{"t": 73.3, "yaw": 90.0, "d": 3.2, "h": 2.95, "pitch": 4.0},
 		{"t": 73.9, "yaw": 90.0, "d": 3.8, "h": 2.0, "pitch": 16.0},
 		{"t": 74.5, "yaw": 90.0, "d": 3.8, "h": 1.46, "pitch": 20.0},
@@ -149,29 +152,31 @@ func _build_timeline_data() -> void:
 		{"t": 100.0, "yaw": 0.0, "d": 3.4, "h": 2.9, "pitch": 0.0},
 	]
 	events = [
-		{"t": 29.75, "action": "attach", "index": 4},
+		{"t": 29.7, "action": "attach", "index": 4},
 		{"t": 57.0, "action": "detach"},
-		{"t": 70.25, "action": "attach", "index": 3},
+		{"t": 70.2, "action": "attach", "index": 3},
 		{"t": 74.9, "action": "detach"},
 	]
 	shots = [
 		{"t0": 0.0, "t1": 8.0, "p0": Vector3(24, 8, 32), "p1": Vector3(17, 5.5, 24),
 		 "l0": Vector3(0.2, 1.5, 6.5), "l1": Vector3(0.4, 1.7, 6.5), "f0": 40.0, "f1": 37.0},
-		{"t0": 8.0, "t1": 23.66, "orbit": true, "c": Vector3(3.8, 0, 10),
-		 "r0": 13.5, "r1": 11.5, "a0": deg_to_rad(-35.0), "a1": deg_to_rad(55.0),
-		 "h0": 4.6, "h1": 3.9, "l": Vector3(3.2, 1.9, 10.0), "f": 38.0},
-		{"t0": 23.66, "t1": 35.66, "p0": Vector3(-0.8, 4.6, 10.4), "p1": Vector3(-0.2, 4.3, 10.9),
-		 "l0": Vector3(3.8, 2.55, 11.5), "l1": Vector3(3.8, 2.55, 11.45), "f0": 44.0, "f1": 44.0},
-		{"t0": 35.66, "t1": 44.68, "p0": Vector3(10.2, 6.6, 6.4), "p1": Vector3(9.4, 6.2, 5.2),
+		{"t0": 8.0, "t1": 23.66, "orbit": true, "c": Vector3(3.8, 0, 11.2),
+		 "r0": 15.5, "r1": 13.5, "a0": deg_to_rad(-35.0), "a1": deg_to_rad(70.0),
+		 "h0": 5.2, "h1": 4.1, "l": Vector3(3.2, 1.9, 11.6), "f": 38.0},
+		{"t0": 23.66, "t1": 35.66, "p0": Vector3(9.0, 1.8, 15.8), "p1": Vector3(12.0, 5.8, 17.0),
+		 "l0": Vector3(3.8, 1.4, 13.2), "l1": Vector3(3.8, 2.9, 14.4), "f0": 46.0, "f1": 44.0},
+		{"t0": 35.66, "t1": 44.68, "p0": Vector3(10.8, 8.0, 9.5), "p1": Vector3(9.5, 7.5, 4.8),
 		 "follow": true, "loff": Vector3(0, 0.1, 0), "f": 40.0},
 		{"t0": 44.68, "t1": 55.68, "p0": Vector3(2.2, 3.3, 5.9), "p1": Vector3(1.9, 3.1, 6.3),
 		 "l0": Vector3(0.4, 1.85, 10.0), "l1": Vector3(0.35, 1.8, 10.0), "f0": 33.0, "f1": 32.0},
 		{"t0": 55.68, "t1": 64.68, "p0": Vector3(3.4, 4.0, 4.8), "p1": Vector3(3.0, 3.7, 5.2),
 		 "l0": Vector3(0.4, 1.55, 10.0), "l1": Vector3(0.4, 1.5, 10.0), "f0": 33.0, "f1": 33.0},
-		{"t0": 64.68, "t1": 71.0, "p0": Vector3(14.0, 5.2, 2.8), "p1": Vector3(15.0, 5.6, 1.4),
-		 "l0": Vector3(2.8, 1.7, 8.9), "l1": Vector3(2.8, 1.8, 8.85), "f0": 38.0, "f1": 38.0},
-		{"t0": 71.0, "t1": 79.68, "p0": Vector3(8.0, 3.7, 2.0), "p1": Vector3(7.2, 3.3, 1.3),
-		 "l0": Vector3(1.4, 1.5, 9.0), "l1": Vector3(1.2, 1.4, 8.8), "f0": 36.0, "f1": 36.0},
+		{"t0": 64.68, "t1": 71.0, "p0": Vector3(15.0, 6.6, 14.2), "p1": Vector3(13.2, 6.0, 13.6),
+		 "l0": Vector3(3.8, 2.2, 13.0), "l1": Vector3(3.8, 2.4, 13.3), "f0": 40.0, "f1": 40.0},
+		{"t0": 71.0, "t1": 74.8, "p0": Vector3(13.0, 6.8, 12.8), "p1": Vector3(9.0, 5.8, 6.0),
+		 "follow": true, "loff": Vector3(0, 0.1, 0), "f": 40.0},
+		{"t0": 74.8, "t1": 79.68, "p0": Vector3(6.5, 3.8, 3.5), "p1": Vector3(7.5, 4.5, 1.0),
+		 "l0": Vector3(0.5, 1.5, 8.8), "l1": Vector3(0.5, 1.6, 8.6), "f0": 36.0, "f1": 36.0},
 		{"t0": 79.68, "t1": 87.68, "p0": Vector3(21, 9, 19), "p1": Vector3(31, 13, 31),
 		 "l0": Vector3(2, 1.5, 3), "l1": Vector3(2, 1.5, 2), "f0": 40.0, "f1": 42.0},
 	]
@@ -324,12 +329,6 @@ func _build_props() -> void:
 	worker_scene = load("res://assets/models/worker.glb")
 	rock_scene = load("res://assets/models/rock.glb")
 
-	var trailer: Node3D = load("res://assets/models/panel_trailer.glb").instantiate()
-	trailer.position = Vector3(-3.6, 0, 16.0)
-	trailer.rotation_degrees.y = 90.0
-	add_child(trailer)
-	_nearest_materials(trailer)
-
 	var probe := block_scene.instantiate()
 	var block_mesh: Mesh = null
 	for mi in probe.find_children("*", "MeshInstance3D", true, false):
@@ -423,10 +422,17 @@ func _build_robot() -> void:
 	grip = robot.find_child("Grip", true, false)
 	vision_node = robot.find_child("EffectorCam", true, false)
 
+	# 随行料车：牵引杆与车尾挂钩相连；机器人换位时整体随动
+	trailer = load("res://assets/models/panel_trailer.glb").instantiate()
+	trailer.position = Vector3(0, 0, 5.9)
+	robot.add_child(trailer)
+	_nearest_materials(trailer)
+
+	# 料台上的组件（Godot 生成，便于逐块拾取/隐藏）
 	for i in 5:
 		var p := panel_scene.instantiate()
-		chassis.add_child(p)
-		p.position = Vector3(0, 2.245 + i * 0.12, 1.8)
+		trailer.add_child(p)
+		p.position = Vector3(0, 1.86 + i * 0.12, -0.8)
 		_nearest_materials(p)
 		stack_panels.append(p)
 
@@ -465,6 +471,7 @@ func _build_hud() -> void:
 		"effector": effector,
 		"vision": vision_node,
 		"stack": stack_panels[2] if stack_panels.size() > 2 else chassis,
+		"trailer": trailer.find_child("Turntable", true, false),
 	}
 	hud.setup(font, camera, timeline, anchors, grip)
 
@@ -556,7 +563,7 @@ func _attach_panel(stack_index: int, t: float) -> void:
 		stack_panels[stack_index].visible = false
 	carried.visible = true
 	attached = true
-	var err := grip.global_position.distance_to(Vector3(ROBOT_X - sin(turret.rotation.y) * 1.8, 2.73 if stack_index == 4 else 2.61, robot.position.z + 1.8))
+	var err := grip.global_position.distance_to(Vector3(ROBOT_X, 2.34 if stack_index == 4 else 2.22, robot.position.z + 5.1))
 	print("[attach t=%.2f] carried on, grip=%s err=%.3f" % [t, str(grip.global_position), err])
 
 

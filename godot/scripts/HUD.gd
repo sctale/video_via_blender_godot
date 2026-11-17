@@ -24,10 +24,11 @@ var align_locked := false
 var show_brackets := false
 
 const CALL_OUTS := [
-	{"key": "body", "label": "履带底盘", "at": 10.8, "dx": -190.0, "dy": 130.0},
+	{"key": "body", "label": "履带底盘", "at": 10.8, "dx": -190.0, "dy": 130.0, "out": 20.0},
 	{"key": "arm", "label": "机械臂", "at": 13.4, "dx": 175.0, "dy": -90.0},
 	{"key": "effector", "label": "真空吸盘", "at": 16.0, "dx": 165.0, "dy": 80.0},
 	{"key": "vision", "label": "3D 视觉", "at": 18.6, "dx": -180.0, "dy": -95.0},
+	{"key": "trailer", "label": "随行料车", "at": 20.8, "dx": -200.0, "dy": -115.0},
 ]
 
 
@@ -160,7 +161,8 @@ func _draw_caption(seg: Dictionary) -> void:
 func _draw_callouts() -> void:
 	for item in CALL_OUTS:
 		var at := float(item["at"])
-		var a := _fade(at, at + 0.35, 22.6, 23.3)
+		var out := float(item.get("out", 22.6))
+		var a := _fade(at, at + 0.35, out, out + 0.7)
 		if a <= 0.0 or not refs.has(item["key"]):
 			continue
 		var node: Node3D = refs[item["key"]]
