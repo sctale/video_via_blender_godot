@@ -2,9 +2,9 @@ extends Node3D
 ## 丽天智能 MMR 体素示教片 — 场景搭建 + 导演时间轴 + 两连杆 IK
 
 const L1 := 2.5          # 大臂长度
-const L2 := 2.3          # 小臂长度
-const GRIP_FWD := 1.0    # 吸盘中心相对腕部前伸（0.3 转接 + 0.7 吸盘架）
-const GRIP_DOWN := 0.58  # 吸盘中心相对腕部下探
+const L2 := 3.3          # 小臂长度（腕部到吸盘架中心）
+const GRIP_FWD := 0.0    # 腕部即吸盘架中心，无前伸
+const GRIP_DOWN := 0.58  # 吸盘中心相对腕部下探（架体/吸盘）
 const ROBOT_X := 3.8
 const SLOT_Z0 := 10.0
 const SLOT_DZ := -1.25  # 纵向组件沿阵列方向的步距

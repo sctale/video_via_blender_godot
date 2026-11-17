@@ -3,7 +3,7 @@
 Copyright (c) 2026 sctale. All rights reserved.
 
 The **demo video** and **all demo media** produced for this project — including but not
-limited to the rendered video (`installation-robot-v1.0.0.mp4`), poster/contact sheet and
+limited to the rendered demo videos (e.g. `installation-robot-v1.1.0.mp4`), poster/contact sheet and
 other stills, rendered 3D models, textures, recorded narration, background music, and the
 LEAPTING / 丽天智能 branding used in the demo — are **NOT** licensed under the MIT License
 and are **NOT** open source.

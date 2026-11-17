@@ -3,8 +3,10 @@ installation-robot-v1.0.0.mp4
 *.mp4
 *.avi
 poster.png
+poster-*.png
 poster.jpg
 contact_sheet.png
+contact_sheet-*.png
 contact_sheet.jpg
 
 # Generated assets / audio / caches

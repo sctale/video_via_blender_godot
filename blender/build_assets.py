@@ -222,6 +222,25 @@ def box(name, size, loc, mat, parent=None, rot=None):
     return o
 
 
+def cyl(name, radius, depth, loc, mat, verts=16, rot=None, parent=None):
+    bpy.ops.object.select_all(action="DESELECT")
+    bpy.ops.mesh.primitive_cylinder_add(vertices=verts, radius=radius, depth=depth, location=(0, 0, 0))
+    o = bpy.context.object
+    o.name = name
+    if rot is not None:
+        o.rotation_mode = "QUATERNION"
+        o.rotation_quaternion = rot
+    o.location = Vector(loc) - _parent_origin(parent)
+    if parent is not None:
+        o.parent = parent
+        o.matrix_parent_inverse = Matrix.Identity(4)
+    _WORLD[name] = Vector(loc)
+    o.data.materials.append(mat)
+    for poly in o.data.polygons:
+        poly.use_smooth = False
+    return o
+
+
 def empty(name, loc, parent=None):
     e = bpy.data.objects.new(name, None)
     bpy.context.collection.objects.link(e)
@@ -367,12 +386,13 @@ def build_robot():
     # 转台：橙色防护布套基座
     turret = empty("Turret", (0, 0, 2.04), chassis)
     box("TurretBase", (1.52, 1.52, 0.1), (0, 0, 2.1), white, turret)
-    box("BootBase", (1.25, 1.25, 0.22), (0, 0, 2.2), orange, turret)
-    box("BootMid", (1.05, 1.05, 0.28), (0, 0, 2.44), orange, turret)
-    box("BootTop", (0.85, 0.85, 0.28), (0, 0, 2.72), orange, turret)
-    for z, w in ((2.32, 1.27), (2.56, 1.07), (2.84, 0.87)):
+    box("BootBase", (1.12, 1.12, 0.18), (0, 0, 2.19), orange, turret)
+    box("BootBelly", (1.36, 1.36, 0.26), (0, 0, 2.41), orange, turret)
+    box("BootMid", (1.08, 1.08, 0.26), (0, 0, 2.67), orange, turret)
+    box("BootTop", (0.82, 0.82, 0.24), (0, 0, 2.9), orange, turret)
+    for z, w in ((2.28, 1.38), (2.54, 1.1), (2.8, 0.84)):
         box(f"BootBand_{z}", (w, w, 0.035), (0, 0, z), orange_dark, turret)
-    box("TurretJoint", (0.68, 0.68, 0.32), (0, 0, 2.94), orange, turret)
+    box("TurretJoint", (0.7, 0.7, 0.3), (0, 0, 3.0), orange_dark, turret)
     box("ArmPin", (0.78, 0.46, 0.28), (0, 0, 3.05), silver, turret)
 
     # 下臂（橙色布套 + 黑色管线）
@@ -384,39 +404,40 @@ def build_robot():
     box("LowerHose", (0.07, 2.3, 0.07), (0.22, 1.25, 3.36), dark, arm_lower)
     box("LowerHoseClamp", (0.1, 0.14, 0.1), (0.22, 2.1, 3.34), steel, arm_lower)
 
-    # 上臂
+    # 上臂：加长到吸盘架中心（肘 y=2.5 → 腕 y=5.8）
     arm_upper = empty("ArmUpper", (0, 2.5, 3.05), arm_lower)
     box("UpperJoint", (0.7, 0.5, 0.7), (0, 2.5, 3.05), orange_dark, arm_upper)
-    box("UpperLink", (0.45, 2.3, 0.45), (0, 3.65, 3.05), orange, arm_upper)
-    for y in (2.85, 3.25, 3.65, 4.05):
+    box("UpperLink", (0.45, 3.3, 0.45), (0, 4.15, 3.05), orange, arm_upper)
+    for y in (2.85, 3.2, 3.55, 3.9, 4.25, 4.6, 4.95, 5.3):
         box(f"UpperBand_{y}", (0.48, 0.06, 0.48), (0, y, 3.05), orange_dark, arm_upper)
-    box("UpperHose", (0.06, 2.0, 0.06), (0.17, 3.65, 3.3), dark, arm_upper)
+    box("UpperHose", (0.06, 3.0, 0.06), (0.17, 4.15, 3.3), dark, arm_upper)
 
-    # 腕部
-    wrist = empty("Wrist", (0, 4.8, 3.05), arm_upper)
-    box("WristJoint", (0.6, 0.6, 0.6), (0, 4.8, 3.05), orange_dark, wrist)
-    box("WristSleeve", (0.36, 0.32, 0.36), (0, 5.02, 3.05), orange, wrist)
+    # 腕部：连接点即吸盘架几何中心（y=5.8）
+    wrist = empty("Wrist", (0, 5.8, 3.05), arm_upper)
+    box("WristJoint", (0.62, 0.62, 0.62), (0, 5.8, 3.05), orange_dark, wrist)
+    box("WristSleeve", (0.36, 0.3, 0.36), (0, 5.62, 3.05), orange, wrist)
     for i in range(3):
-        box(f"CableLoop_{i}", (0.07, 0.09, 0.07), (0.12 - i * 0.05, 5.1 + i * 0.06, 3.3), dark, wrist)
+        box(f"CableLoop_{i}", (0.07, 0.09, 0.07), (0.14 - i * 0.06, 5.78 + i * 0.05, 3.42), dark, wrist)
 
-    # 吸盘架：银色框架 + 蓝色吸盘（绕组件法线旋转）
+    # 吸盘架：以腕轴为中心，两梁 + 6 蓝吸盘（绕组件法线旋转）
     effector_yaw = empty("EffectorYaw", (0, 5.8, 3.05), wrist)
-    effector = empty("Effector", (0, 5.1, 3.05), effector_yaw)
-    box("EffectorHinge", (0.55, 0.4, 0.25), (0, 5.16, 2.95), silver, effector)
+    effector = empty("Effector", (0, 5.8, 3.05), effector_yaw)
+    box("EffectorHinge", (0.5, 0.5, 0.16), (0, 5.8, 2.98), silver, effector)
+    box("EffectorCover", (1.2, 0.6, 0.05), (0, 5.8, 3.02), silver, effector)
     for i, y in enumerate((5.45, 6.15)):
-        box(f"SuctionBeam_{i}", (3.0, 0.16, 0.16), (0, y, 2.87), silver, effector)
-    for x in (-1.45, 1.45):
-        box(f"SuctionRail_{x}", (0.16, 0.95, 0.16), (x, 5.8, 2.87), silver, effector)
-    box("SuctionManifold", (0.8, 0.24, 0.16), (0, 5.8, 3.02), dark, effector)
-    for xi, x in enumerate((-0.95, -0.35, 0.35, 0.95)):
+        box(f"SuctionBeam_{i}", (2.8, 0.12, 0.12), (0, y, 2.87), silver, effector)
+    for x in (-1.4, 1.4):
+        box(f"SuctionRail_{x}", (0.12, 0.95, 0.12), (x, 5.8, 2.87), silver, effector)
+    box("SuctionManifold", (0.8, 0.2, 0.12), (0, 5.8, 3.0), dark, effector)
+    for xi, x in enumerate((-0.9, 0.0, 0.9)):
         for yi, y in enumerate((5.45, 6.15)):
-            box(f"CupStalk_{xi}{yi}", (0.06, 0.06, 0.12), (x, y, 2.72), silver, effector)
+            box(f"CupStalk_{xi}{yi}", (0.05, 0.05, 0.12), (x, y, 2.72), silver, effector)
             box(f"Cup_{xi}{yi}", (0.22, 0.22, 0.18), (x, y, 2.605), blue, effector)
             box(f"CupTip_{xi}{yi}", (0.16, 0.16, 0.02), (x, y, 2.51), dark, effector)
-    box("EffectorCam", (0.3, 0.3, 0.2), (0, 6.05, 3.0), dark, effector)
-    box("EffectorLens", (0.12, 0.12, 0.02), (0, 6.05, 2.885), glass, effector)
-    box("EffectorSensor", (0.25, 0.18, 0.16), (1.15, 6.2, 2.96), white, effector)
-    box("EffectorLamp", (0.1, 0.1, 0.06), (-1.2, 6.2, 2.94), light, effector)
+    box("EffectorCam", (0.28, 0.28, 0.2), (0, 6.0, 3.0), dark, effector)
+    box("EffectorLens", (0.12, 0.12, 0.02), (0, 6.0, 2.885), glass, effector)
+    box("EffectorSensor", (0.24, 0.18, 0.16), (1.2, 6.15, 2.96), white, effector)
+    box("EffectorLamp", (0.1, 0.1, 0.06), (-1.2, 6.15, 2.94), light, effector)
     grip = empty("Grip", (0, 5.8, 2.47), effector)
 
     return root
@@ -485,7 +506,8 @@ def build_trailer_asset():
     frame = M("panel_frame", rough=0.45, metal=0.4)
     root = empty("PanelTrailer", (0, 0, 0))
     box("TrailerBed", (2.7, 1.5, 0.14), (0, 0, 0.78), dark, root)
-    box("TrailerFrame", (2.8, 1.6, 0.1), (0, 0, 0.9), green, root)
+    box("TrailerFrame", (2.8, 1.6, 0.1), (0, 0, 0.9), steel, root)
+    box("TrailerGreenRail", (2.8, 0.08, 0.08), (0, 0.8, 0.96), green, root)
     for x in (-1.15, 1.15):
         for y in (-0.7, 0.7):
             box(f"Tire_{x}_{y}", (0.55, 0.38, 0.55), (x, y, 0.36), dark, root)
@@ -494,18 +516,23 @@ def build_trailer_asset():
     box("Jack", (0.1, 0.1, 0.45), (0, 2.3, 0.25), steel, root)
     rot = Matrix.Rotation(math.radians(-25), 4, "X")
     q = rot.to_quaternion()
-    base_center = Vector((0, 0.1, 1.62))
+    drum_c = Vector((0, 0.05, 1.45))
+    cyl("Drum", 1.25, 0.5, tuple(drum_c), steel, verts=16, rot=q, parent=root)
+    cyl("DrumRim", 1.32, 0.08, tuple(drum_c + rot @ Vector((0, 0, 0.26))), dark, verts=16, rot=q, parent=root)
+    pallet_c = drum_c + rot @ Vector((0, 0, 0.3))
+    box("PalletBase", (2.4, 1.3, 0.08), tuple(pallet_c), wood, root, q)
+    base_center = pallet_c + rot @ Vector((0, 0, 0.08))
     for i in range(4):
-        c = base_center + rot @ Vector((0, 0, 0.13 * i))
+        c = base_center + rot @ Vector((0, 0, 0.12 + 0.13 * i))
         box(f"StackPanel_{i}", (2.4, 1.2, 0.09), tuple(c), frame, root, q)
         top = c + rot @ Vector((0, 0, 0.055))
         box(f"StackCells_{i}", (2.28, 1.08, 0.02), tuple(top), cells, root, q)
     for x in (-0.8, 0.8):
-        c = base_center + rot @ Vector((x, 0, 0.3))
+        c = base_center + rot @ Vector((x, 0, 0.48))
         box(f"Strap_{x}", (0.12, 1.3, 0.05), tuple(c), green, root, q)
-    box("PalletBase", (2.5, 1.4, 0.1), (0, 0.1, 1.35), wood, root)
     for x in (-1.1, 1.1):
-        box(f"PalletEnd_{x}", (0.12, 1.3, 0.5), (x, 0.1, 1.38), wood, root)
+        c = pallet_c + rot @ Vector((x, 0, 0.4))
+        box(f"PalletEnd_{x}", (0.12, 1.3, 0.5), tuple(c), wood, root, q)
     export_glb(root, "panel_trailer.glb")
 
 
