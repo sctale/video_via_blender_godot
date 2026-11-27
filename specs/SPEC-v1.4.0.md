@@ -43,7 +43,7 @@
 - [x] `make_bgm.py` / 新增 `make_sfx.py` / `mix_audio.py`：声音设计与混音。
 - [x] 新增 `preview_stills.ps1` / `verify_video.ps1`；`render_video.ps1` 接入。
 - [x] 关键静帧 A/B、全量渲染、编码/音频/色彩范围验收。
-- [ ] 同步源码镜像、提交、发布 v1.4.0；按用户既定习惯仅保留最新 MMR Release。
+- [x] 同步源码镜像、提交、发布 v1.4.0；按用户既定习惯仅保留最新 MMR Release。
 
 ## 验收标准
 
@@ -66,7 +66,9 @@
 
 - [x] 静帧：0.5/8.5/14/21.5/29.7/38/47.6/57/66.5/70.2/75/82s 全部渲染并复核；
   机械臂/随行料车标注接框，75s 机位已避开车身遮挡。
-- [x] 全量：2630 帧 / 87.667s / 146,994,088 B；-16.0 LUFS / -2.0 dBTP；
+- [x] 全量：2630 帧 / 87.667s / 146,993,671 B；-16.0 LUFS / -2.0 dBTP；
   无 ≥0.15s 黑段；yuv420p / tv / BT.709 三标记齐全。
 - [x] 动作：attach err 0.001/0.002m；落板角高与 v1.3.1 差异约 1–2mm。
-- [ ] 仓库同步 + Release v1.4.0（待发布）。
+- [x] 仓库同步 + Release v1.4.0：资产 `installation-robot-v1.4.0.mp4`
+  sha256 `cf825b…12ee`、`poster.jpg` 368,846 B、`contact_sheet.jpg` 669,726 B；
+  旧 MMR Release 已删除，TapArena 宣传片保留。

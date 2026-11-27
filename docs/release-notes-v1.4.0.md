@@ -41,7 +41,7 @@
 - `pix_fmt=yuv420p`、`color_range=tv`、BT.709 matrix/transfer/primaries 三标记齐全。
 - 综合响度 **-16.0 LUFS**，true peak **-2.0 dBTP**；无 ≥0.15s 黑段。
 - 抓取 err ≤0.002m；落板角高与 v1.3.1 基本一致（差异约 1–2mm）。
-- MP4 146,994,088 B（约 140.2 MiB）；`poster.jpg` 368,846 B；
+- MP4 146,993,671 B（约 140.2 MiB）；`poster.jpg` 368,846 B；
   `contact_sheet.jpg` 669,726 B。
 
 ## 说明
