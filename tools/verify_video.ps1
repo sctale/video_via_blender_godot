@@ -1,6 +1,6 @@
 # Verify final video specs, color metadata, black frames and loudness.
 param(
-    [string]$Version = "1.4.0",
+    [string]$Version = "1.4.1",
     [string]$Video = ""
 )
 $ErrorActionPreference = "Stop"

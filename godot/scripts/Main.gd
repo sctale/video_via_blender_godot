@@ -61,10 +61,14 @@ var align_progress := 0.0
 var align_locked := false
 
 var shots: Array = []
+var camera_style := "CLASSIC"
+var audit_mode := false
 
 
 func _ready() -> void:
 	still_mode = OS.has_environment("STILL_T")
+	camera_style = "CLASSIC"
+	audit_mode = OS.has_environment("CAMERA_AUDIT")
 	_load_timeline()
 	_build_environment()
 	_build_ground()
@@ -162,50 +166,32 @@ func _build_timeline_data() -> void:
 		{"t": 70.2, "action": "attach", "index": 3},
 		{"t": 74.9, "action": "detach"},
 	]
-	shots = [
-		{"t0": 0.0, "t1": 4.0, "p0": Vector3(18, 3.2, 18), "p1": Vector3(14, 4.5, 14),
-		 "l0": Vector3(3.8, 1.6, 7), "l1": Vector3(3.8, 1.8, 7), "f0": 42.0, "f1": 38.0, "ease": "out"},
-		{"t0": 4.0, "t1": 8.0, "p0": Vector3(24, 14, 22), "p1": Vector3(20, 11, 18),
-		 "l0": Vector3(2, 0, 7), "l1": Vector3(2, 0.5, 7), "f0": 45.0, "f1": 42.0, "ease": "smooth"},
-		{"t0": 8.0, "t1": 13.0, "p0": Vector3(18, 4.2, 7), "p1": Vector3(15, 3.4, 7),
-		 "l0": Vector3(3.8, 1.7, 7), "l1": Vector3(3.8, 1.8, 7), "f0": 38.0, "f1": 36.0, "ease": "linear"},
-		{"t0": 13.0, "t1": 17.0, "p0": Vector3(10, 4.8, 12), "p1": Vector3(8.5, 4.2, 11),
-		 "l0": Vector3(3.8, 3.0, 10), "l1": Vector3(3.8, 3.2, 10), "f0": 32.0, "f1": 30.0, "ease": "smooth"},
-		{"t0": 17.0, "t1": 21.0, "p0": Vector3(10, 3.2, 1), "p1": Vector3(8, 2.8, 2),
-		 "l0": Vector3(3.8, 1.7, 4.4), "l1": Vector3(3.8, 1.9, 4.4), "f0": 34.0, "f1": 32.0, "ease": "out"},
-		{"t0": 21.0, "t1": 23.66, "p0": Vector3(9, 1.8, 2), "p1": Vector3(8, 2.2, 3),
-		 "l0": Vector3(3.8, 2.0, 4.4), "l1": Vector3(3.8, 2.2, 4.4), "f0": 36.0, "f1": 35.0, "ease": "smooth"},
-		{"t0": 23.66, "t1": 27.6, "p0": Vector3(11, 3.0, 13), "p1": Vector3(10, 3.4, 12),
-		 "l0": Vector3(3.8, 2.3, 6.5), "l1": Vector3(3.8, 2.6, 5.5), "f0": 40.0, "f1": 38.0, "ease": "smooth"},
-		{"t0": 27.6, "t1": 30.9, "p0": Vector3(8.5, 3.4, 7.5), "p1": Vector3(7.8, 3.0, 7.0),
-		 "l0": Vector3(3.8, 2.5, 4.9), "l1": Vector3(3.8, 2.55, 4.9), "f0": 30.0, "f1": 28.0, "ease": "out"},
-		{"t0": 30.9, "t1": 35.66, "p0": Vector3(11, 3.2, 6), "p1": Vector3(10, 4.5, 5),
-		 "l0": Vector3(3.8, 2.8, 5.5), "l1": Vector3(3.8, 3.2, 6.5), "f0": 36.0, "f1": 35.0, "ease": "smooth"},
-		{"t0": 35.66, "t1": 40.4, "follow": true, "offset": Vector3(7, 4, -4),
-		 "loff": Vector3(0, 0.1, 0), "f": 38.0, "ease": "linear"},
-		{"t0": 40.4, "t1": 44.68, "p0": Vector3(12, 4.5, 16), "p1": Vector3(10, 4, 15),
-		 "l0": Vector3(0, 1.6, 10), "l1": Vector3(0, 1.5, 10), "f0": 30.0, "f1": 28.0, "ease": "out"},
-		{"t0": 44.68, "t1": 49.0, "p0": Vector3(3, 9, 13), "p1": Vector3(2.5, 8, 12.5),
-		 "l0": Vector3(0, 1.4, 10), "l1": Vector3(0, 1.4, 10), "f0": 34.0, "f1": 32.0, "ease": "smooth"},
-		{"t0": 49.0, "t1": 55.68, "p0": Vector3(5, 3.2, 13), "p1": Vector3(4.5, 2.8, 12.5),
-		 "l0": Vector3(0, 1.5, 10), "l1": Vector3(0, 1.45, 10), "f0": 32.0, "f1": 30.0, "ease": "out"},
-		{"t0": 55.68, "t1": 60.8, "p0": Vector3(12, 4, 16), "p1": Vector3(11, 3.5, 15),
-		 "l0": Vector3(3.8, 1.8, 9), "l1": Vector3(3.8, 2.0, 8), "f0": 36.0, "f1": 35.0, "ease": "smooth"},
-		{"t0": 60.8, "t1": 64.68, "p0": Vector3(20, 6, 18), "p1": Vector3(18, 5, 16),
-		 "l0": Vector3(3.8, 1.5, 8), "l1": Vector3(3.8, 1.6, 8), "f0": 40.0, "f1": 38.0, "ease": "linear"},
-		{"t0": 64.68, "t1": 68.0, "p0": Vector3(10, 2.4, 13), "p1": Vector3(9, 2.2, 12),
-		 "l0": Vector3(3.8, 0.8, 9.5), "l1": Vector3(3.8, 0.8, 9.2), "f0": 34.0, "f1": 33.0, "ease": "smooth"},
-		{"t0": 68.0, "t1": 71.0, "p0": Vector3(8, 3.0, 2), "p1": Vector3(7.2, 2.7, 2.5),
-		 "l0": Vector3(3.8, 2.1, 4.4), "l1": Vector3(3.8, 2.2, 4.4), "f0": 32.0, "f1": 30.0, "ease": "out"},
-		{"t0": 71.0, "t1": 74.8, "follow": true, "offset": Vector3(6, 3, 4),
-		 "loff": Vector3(0, 0.1, 0), "f": 36.0, "ease": "smooth"},
-		{"t0": 74.8, "t1": 77.2, "p0": Vector3(1.5, 3.0, 13), "p1": Vector3(1.0, 2.6, 12.5),
-		 "l0": Vector3(0, 1.5, 8.75), "l1": Vector3(0, 1.5, 8.75), "f0": 32.0, "f1": 30.0, "ease": "out"},
-		{"t0": 77.2, "t1": 82.0, "orbit": true, "c": Vector3(3.8, 0, 7.2),
-		 "r0": 14.0, "r1": 11.0, "a0": deg_to_rad(-30.0), "a1": deg_to_rad(25.0),
-		 "h0": 4.5, "h1": 3.5, "l": Vector3(3.8, 1.7, 7), "f": 38.0, "ease": "smooth"},
-		{"t0": 82.0, "t1": 87.68, "p0": Vector3(20, 9, 16), "p1": Vector3(30, 13, 24),
-		 "l0": Vector3(2, 1.2, 7), "l1": Vector3(2, 1.2, 7), "f0": 42.0, "f1": 44.0, "ease": "out"},
+	shots = _shots_classic()
+
+
+func _shots_classic() -> Array:
+	return [
+		{"t0": 0.0, "t1": 8.0, "p0": Vector3(23, 8, 0.0), "p1": Vector3(17, 5.5, 2.5),
+		 "l0": Vector3(2.0, 1.5, 7.0), "l1": Vector3(2.2, 1.7, 7.0), "f0": 40.0, "f1": 37.0},
+		{"t0": 8.0, "t1": 23.66, "orbit": true, "c": Vector3(3.8, 0, 7.2),
+		 "r0": 15.5, "r1": 13.5, "a0": deg_to_rad(-45.0), "a1": deg_to_rad(15.0),
+		 "h0": 5.2, "h1": 4.1, "l": Vector3(3.2, 1.9, 7.4), "f": 38.0},
+		{"t0": 23.66, "t1": 35.66, "p0": Vector3(12.0, 2.4, 5.8), "p1": Vector3(13.8, 6.0, 2.4),
+		 "l0": Vector3(3.8, 1.8, 4.9), "l1": Vector3(3.8, 3.5, 4.7), "f0": 42.0, "f1": 42.0},
+		{"t0": 35.66, "t1": 44.68, "p0": Vector3(10.5, 7.5, 1.0), "p1": Vector3(9.0, 6.8, 5.5),
+		 "follow": true, "loff": Vector3(0, 0.1, 0), "f": 40.0},
+		{"t0": 44.68, "t1": 55.68, "p0": Vector3(2.2, 3.3, 5.9), "p1": Vector3(1.9, 3.1, 6.3),
+		 "l0": Vector3(0.4, 1.85, 10.0), "l1": Vector3(0.35, 1.8, 10.0), "f0": 33.0, "f1": 32.0},
+		{"t0": 55.68, "t1": 64.68, "p0": Vector3(3.4, 4.0, 4.8), "p1": Vector3(3.0, 3.7, 5.2),
+		 "l0": Vector3(0.4, 1.55, 10.0), "l1": Vector3(0.4, 1.5, 10.0), "f0": 33.0, "f1": 33.0},
+		{"t0": 64.68, "t1": 71.0, "p0": Vector3(15.0, 6.6, 3.2), "p1": Vector3(13.2, 6.0, 3.8),
+		 "l0": Vector3(3.8, 2.2, 4.5), "l1": Vector3(3.8, 2.4, 4.3), "f0": 40.0, "f1": 40.0},
+		{"t0": 71.0, "t1": 74.8, "p0": Vector3(13.0, 6.8, 4.6), "p1": Vector3(9.0, 5.8, 11.0),
+		 "follow": true, "loff": Vector3(0, 0.1, 0), "f": 40.0},
+		{"t0": 74.8, "t1": 77.2, "p0": Vector3(3.3, 4.2, 3.7), "p1": Vector3(3.1, 4.0, 4.1),
+		 "l0": Vector3(0.2, 1.55, 8.85), "l1": Vector3(0.2, 1.5, 8.8), "f0": 33.0, "f1": 33.0},
+		{"t0": 77.2, "t1": 87.68, "p0": Vector3(23, 10, 2), "p1": Vector3(32, 14, -4),
+		 "l0": Vector3(2, 1.5, 7), "l1": Vector3(2, 1.5, 7), "f0": 40.0, "f1": 42.0},
 	]
 
 
@@ -720,7 +706,8 @@ func _update_camera(t: float) -> void:
 			break
 	var span := maxf(float(sh["t1"]) - float(sh["t0"]), 0.001)
 	var u := clampf((t - float(sh["t0"])) / span, 0.0, 1.0)
-	var e := _ease(u, String(sh.get("ease", "smooth")))
+	var hold := float(sh.get("hold", 0.0))
+	var e := 1.0 if hold > 0.0 and u >= 1.0 - hold else _ease(u, String(sh.get("ease", "smooth")))
 	var pos := camera.global_position
 	var target := Vector3.ZERO
 	var fov := camera.fov
@@ -749,6 +736,77 @@ func _update_camera(t: float) -> void:
 	camera.global_position = pos
 	camera.fov = fov
 	camera.look_at(target, Vector3.UP)
+
+
+func _active_panel_for_audit(t: float) -> Node3D:
+	if t < 29.7:
+		return stack_panels[4]
+	if t < 57.0:
+		return carried if carried.visible else placed_panels[0]
+	if t < 68.0:
+		return placed_panels[0]
+	if t < 70.2:
+		return stack_panels[3]
+	if t < 74.9:
+		return carried
+	return placed_panels[1]
+
+
+func _ray_aabb_t(o: Vector3, d: Vector3, b: AABB) -> float:
+	var tmin := 0.0
+	var tmax := 1.0
+	for axis in range(3):
+		var orig := o[axis]
+		var dir := d[axis]
+		var mn := b.position[axis]
+		var mx := b.end[axis]
+		if absf(dir) < 0.00001:
+			if orig < mn or orig > mx:
+				return -1.0
+		else:
+			var t1 := (mn - orig) / dir
+			var t2 := (mx - orig) / dir
+			tmin = maxf(tmin, minf(t1, t2))
+			tmax = minf(tmax, maxf(t1, t2))
+			if tmin > tmax:
+				return -1.0
+	return tmin
+
+
+func _audit_point(label: String, node: Node3D, exclude_root: Node3D, t: float) -> void:
+	if node == null:
+		return
+	var wp := node.global_position
+	var sp := camera.unproject_position(wp)
+	var vp := get_viewport().get_visible_rect().size
+	var in_frame := sp.x >= vp.x * 0.05 and sp.x <= vp.x * 0.95 and sp.y >= vp.y * 0.05 and sp.y <= vp.y * 0.95 and not camera.is_position_behind(wp)
+	var occluded := false
+	if in_frame:
+		var from := camera.global_position
+		var delta := wp - from
+		for n in find_children("*", "MeshInstance3D", true, false):
+			if n == exclude_root or (exclude_root != null and exclude_root.is_ancestor_of(n)):
+				continue
+			if not n.is_visible_in_tree() or n.mesh == null or n.mesh is PlaneMesh:
+				continue
+			if n.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF:
+				continue
+			var aabb: AABB = n.global_transform * n.mesh.get_aabb()
+			var hit := _ray_aabb_t(from, delta, aabb)
+			if hit > 0.01 and hit < 0.97:
+				occluded = true
+				break
+	print("[cam-audit] style=%s t=%.2f node=%s screen=(%.0f,%.0f) in_frame=%s occluded=%s" % [
+		camera_style, t, label, sp.x, sp.y, str(in_frame).to_lower(), str(occluded).to_lower()])
+
+
+func _camera_audit(t: float) -> void:
+	var panel := _active_panel_for_audit(t)
+	var target := placed_panels[0] if t < 68.0 else placed_panels[1]
+	_audit_point("grip", grip, effector, t)
+	_audit_point("panel", panel, panel, t)
+	_audit_point("target", target, target, t)
+	_audit_point("body", chassis, chassis, t)
 
 
 func _update_hud(t: float) -> void:
@@ -791,5 +849,8 @@ func apply_time(t: float) -> void:
 	if impact:
 		impact_dust.global_position = grip.global_position + Vector3(0, -0.55, 0)
 	_update_camera(t)
+	if audit_mode:
+		if not still_mode or absf(t - float(OS.get_environment("STILL_T"))) < 0.001:
+			_camera_audit(t)
 	_update_hud(t)
 	last_time = t

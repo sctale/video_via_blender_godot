@@ -3,22 +3,23 @@
 **用 Blender 程序化建模 + Godot 4 实时导演，制作体素风格产品视频的完整开源方法。**
 
 示例成片：丽天智能 MMR 光伏组件安装机器人 · 体素化原创演绎（1920×1080 / 30fps / 87.7s）。
-当前版本 **v1.4.0**：黄金时刻电影化灯光与轻后期、21 镜头重排、机械液压/轮毂/履带细节、
-同步机械音效与分层混音、BT.709 色彩管理与自动验收。
+当前版本 **v1.4.1**：恢复 v1.3.1 的经典 10 镜头语言，保留 v1.4.0 的黄金时刻灯光、
+机械/材质细节、同步音效与 BT.709 自动验收；新增关键节点可见性审计。
 成片与媒体仅作展示，**不开源**：见下方「开源范围」。
 
 另有一支同管线制作的《萌兽峡谷 TapArena》30 秒宣传片（体素演绎，含一段游戏实录）：
 [▶ taparena-promo-v1.0](https://github.com/sctale/video_via_blender_godot/releases/tag/taparena-promo-v1.0)
 
-[▶ 示例成片（Release）](https://github.com/sctale/video_via_blender_godot/releases/tag/v1.4.0) ·
+[▶ 示例成片（Release）](https://github.com/sctale/video_via_blender_godot/releases/tag/v1.4.1) ·
 [下载视频](https://github.com/sctale/video_via_blender_godot/releases/latest) ·
 [实现记录（SPEC v1.2）](specs/SPEC-v1.2.0.md) ·
 [修正记录（SPEC v1.2.1）](specs/SPEC-v1.2.1.md) ·
 [料车重做（SPEC v1.3.0）](specs/SPEC-v1.3.0.md) ·
 [标注引线修正（SPEC v1.3.1）](specs/SPEC-v1.3.1.md) ·
-[电影化升级（SPEC v1.4.0）](specs/SPEC-v1.4.0.md)
+[电影化升级（SPEC v1.4.0）](specs/SPEC-v1.4.0.md) ·
+[经典镜头恢复（SPEC v1.4.1）](specs/SPEC-v1.4.1.md)
 
-![示例成片海报](https://github.com/sctale/video_via_blender_godot/releases/download/v1.4.0/poster.jpg)
+![示例成片海报](https://github.com/sctale/video_via_blender_godot/releases/download/v1.4.1/poster.jpg)
 
 ---
 
@@ -102,8 +103,8 @@ ffmpeg -y -i godot/build/final.avi -i audio/mix.m4a -map 0:v:0 -map 1:a:0 \
   -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -profile:v high -level 4.1 \
   -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
   -bsf:v "h264_metadata=colour_primaries=1:transfer_characteristics=1:matrix_coefficients=1" `
-  -movflags +faststart -c:a aac -b:a 192k -ar 48000 -frames:v 2630 -shortest installation-robot-v1.4.0.mp4
-powershell -ExecutionPolicy Bypass -File tools\verify_video.ps1 -Version 1.4.0
+  -movflags +faststart -c:a aac -b:a 192k -ar 48000 -frames:v 2630 -shortest installation-robot-v1.4.1.mp4
+powershell -ExecutionPolicy Bypass -File tools\verify_video.ps1 -Version 1.4.1
 ```
 
 ## 目录
@@ -113,7 +114,7 @@ blender/build_assets.py        # 程序化建模 + 像素贴图 + GLB 导出 + �
 godot/
   project.godot                # 1920×1080、Forward+、4xMSAA + FXAA、Movie Maker 30fps
   scenes/Main.tscn
-  scripts/Main.gd              # 场景搭建、两连杆 IK、21 镜头、机械动画、时间轴
+  scripts/Main.gd              # 场景搭建、两连杆 IK、经典 10 镜头、机械动画、时间轴
   scripts/HUD.gd               # 字幕/步骤条/标注/对位 HUD/片尾卡
   shaders/cinematic.gdshader   # 暗角/细颗粒/轻暖调（不作用于 HUD）
   assets/fonts/                # 像素字体（MIT）
@@ -124,12 +125,12 @@ tools/
   make_sfx.py, sfx_cues.json   # 同步机械/环境音效与事件表
   mix_audio.py                 # 逐段人声归一 + BGM/SFX 侧链 + 两遍 loudnorm
   make_contact_sheet.py        # 带时间标签的静帧 contact sheet
-  preview_stills.ps1           # 关键时间点静帧预览
+  preview_stills.ps1           # 关键时间点静帧预览（-Audit 输出节点可见性）
   render_video.ps1             # 终渲 + BT.709 压制 + 抽帧 + 自动验收
   verify_video.ps1             # 规格/黑段/EBU R128/色彩标记检查
   first_run.ps1                # 首次完整生成
-specs/SPEC.md, specs/SPEC-v1.1.0.md, specs/SPEC-v1.2.0.md, specs/SPEC-v1.2.1.md, specs/SPEC-v1.3.0.md, specs/SPEC-v1.3.1.md, specs/SPEC-v1.4.0.md  # 目标/分段/验收/实现记录
-docs/release-notes-v1.0.0.md, docs/release-notes-v1.1.0.md, docs/release-notes-v1.2.0.md, docs/release-notes-v1.2.1.md, docs/release-notes-v1.3.0.md, docs/release-notes-v1.3.1.md, docs/release-notes-v1.4.0.md  # Release 说明
+specs/SPEC.md, specs/SPEC-v1.1.0.md, specs/SPEC-v1.2.0.md, specs/SPEC-v1.2.1.md, specs/SPEC-v1.3.0.md, specs/SPEC-v1.3.1.md, specs/SPEC-v1.4.0.md, specs/SPEC-v1.4.1.md  # 目标/分段/验收/实现记录
+docs/release-notes-v1.0.0.md, docs/release-notes-v1.1.0.md, docs/release-notes-v1.2.0.md, docs/release-notes-v1.2.1.md, docs/release-notes-v1.3.0.md, docs/release-notes-v1.3.1.md, docs/release-notes-v1.4.0.md, docs/release-notes-v1.4.1.md  # Release 说明
 ```
 
 首次运行后，会生成（已被 `.gitignore` 排除、不属于本仓库源码）：
@@ -163,8 +164,8 @@ audio/                         # 旁白 mp3 / bgm.wav / sfx.wav / mix.m4a
   落板时组件长边沿 20° 坡面、短边沿阵列方向。
 - `pose_keys` 定义抓取、抬升、回转、对位、落板、换位；`events` 处理“吸附/释放”；
   切换面板可见性并由 `grip.global_transform` 无缝接管落板姿态。
-- 镜头由 `shots` 描述（位置/目标/FOV/跟随/轨道/缓动），v1.4.0 重排为 21 个镜头；
-  吸附、对位、释放使用近景，动作末段 ease-out，避免匀速“起步—停车”。
+- 镜头由 `shots` 描述（位置/目标/FOV/跟随/轨道）；v1.4.1 恢复 v1.3.1 的经典 10 镜头，
+  保留 v1.4.0 的画质与声音升级，并增加 `CAMERA_AUDIT=1` 关键节点可见性检查。
 
 ### 3. 字幕与 HUD
 

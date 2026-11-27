@@ -9,7 +9,7 @@ Set-Location $root
 $py = "py"
 $pyArgs = @("-3")
 if (-not (Get-Command py -ErrorAction SilentlyContinue)) { $py = "python"; $pyArgs = @() }
-$ver = "1.4.0"
+$ver = "1.4.1"
 
 if ($RebuildAssets) {
     Write-Host "[1/7] Rebuild Blender assets ..."
