@@ -27,7 +27,8 @@ for d in (TEX_DIR, MODEL_DIR, PREVIEW_DIR, GODOT_TEX):
 
 # ---------------------------------------------------------------- PNG / 贴图
 def save_png(path, arr):
-    h, w, _ = arr.shape
+    h, w, c = arr.shape
+    color_type = 6 if c == 4 else 2
     raw = b"".join(b"\x00" + arr[y].tobytes() for y in range(h))
 
     def chunk(tag, data):
@@ -35,7 +36,7 @@ def save_png(path, arr):
         return struct.pack(">I", len(data)) + c + struct.pack(">I", zlib.crc32(c) & 0xFFFFFFFF)
 
     png = (b"\x89PNG\r\n\x1a\n"
-           + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+           + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, color_type, 0, 0, 0))
            + chunk(b"IDAT", zlib.compress(raw, 9))
            + chunk(b"IEND", b""))
     with open(path, "wb") as f:
@@ -54,32 +55,69 @@ def noise_tex(w, h, base, amp, seed, specks=None):
     return arr
 
 
+def _upscale_grid(rng, cells, size):
+    g = rng.normal(0, 1, (cells, cells)).astype(np.float32)
+    return np.repeat(np.repeat(g, size // cells, axis=0), size // cells, axis=1)
+
+
+def _normal_from_height(h, strength=2.5):
+    gy, gx = np.gradient(h.astype(np.float32))
+    n = np.stack([-gx * strength, -gy * strength, np.ones_like(h)], axis=-1)
+    n /= np.linalg.norm(n, axis=-1, keepdims=True) + 1e-8
+    return (np.clip(n * 0.5 + 0.5, 0, 1) * 255).astype(np.uint8)
+
+
 def sand_tex():
+    """256px 多尺度沙地：细沙、波纹、碎石，避免 32px 平铺的塑料感。"""
     rng = np.random.default_rng(7)
-    arr = noise_tex(32, 32, (203, 178, 130), 9, 7, specks=((176, 150, 104), 26))
-    for _ in range(10):
-        x, y = rng.integers(0, 32, 2)
-        arr[y:y + 2, x:x + 2] = (232, 210, 164)
+    size = 256
+    h = np.zeros((size, size), dtype=np.float32)
+    for cells, amp in ((4, 0.55), (16, 0.30), (64, 0.16), (256, 0.08)):
+        h += _upscale_grid(rng, cells, size) * amp
+    yy, xx = np.mgrid[0:size, 0:size]
+    h += np.sin(xx * 0.22 + np.sin(yy * 0.045) * 2.0) * 0.05
+    base = np.array((203, 178, 130), dtype=np.float32)
+    arr = np.clip(base[None, None, :] + h[:, :, None] * 18.0, 0, 255).astype(np.uint8)
+    for _ in range(420):
+        x, y = int(rng.integers(0, size)), int(rng.integers(0, size))
+        r = int(rng.integers(1, 3))
+        arr[max(0, y-r):y+r+1, max(0, x-r):x+r+1] = (176, 150, 104) if rng.random() < 0.6 else (232, 210, 164)
+    return arr, _normal_from_height(h, 3.0)
+
+
+def track_tex():
+    """两条带胎纹的透明车辙，贴在地面上增加作业叙事。"""
+    w, h = 128, 512
+    arr = np.zeros((h, w, 4), dtype=np.uint8)
+    for x0 in (18, 78):
+        for x in range(x0, x0 + 32):
+            edge = min((x - x0) / 5.0, (x0 + 31 - x) / 5.0, 1.0)
+            for y in range(h):
+                tread = 0.55 + 0.45 * (0.5 + 0.5 * np.sin(y * 0.42))
+                arr[y, x] = (74, 58, 36, int(150 * edge * tread))
     return arr
 
 
 def panel_tex():
-    w, h = 120, 60
+    w, h = 240, 120
     arr = np.zeros((h, w, 3), dtype=np.uint8)
-    arr[:, :] = (12, 20, 32)
+    arr[:, :] = (10, 18, 30)
     cols, rows = 12, 6
     cw, ch = w // cols, h // rows
     rng = np.random.default_rng(21)
     for r in range(rows):
         for c in range(cols):
-            tint = int(rng.integers(-5, 6))
-            arr[r * ch + 1:(r + 1) * ch - 1, c * cw + 1:(c + 1) * cw - 1] = (17 + tint, 33 + tint, 55 + tint)
-            if rng.random() < 0.15:
-                arr[r * ch + 2:(r + 1) * ch - 2, c * cw + 2:(c + 1) * cw - 2] = (24, 48, 78)
+            tint = int(rng.integers(-4, 5))
+            glow = int(10 * (1.0 - abs(c - 5.5) / 6.0))
+            arr[r * ch + 2:(r + 1) * ch - 2, c * cw + 2:(c + 1) * cw - 2] = (
+                15 + tint + glow, 31 + tint + glow, 55 + tint + glow)
+            arr[r * ch + 4:(r + 1) * ch - 4, c * cw + 4:(c + 1) * cw - 4:3] = (92, 112, 132)
+            if rng.random() < 0.18:
+                arr[r * ch + 3:(r + 1) * ch - 3, c * cw + 3:(c + 1) * cw - 3] = (22, 44, 72)
     for c in range(cols + 1):
-        arr[:, min(c * cw, w - 1)] = (118, 130, 144)
+        arr[:, min(c * cw, w - 1)] = (150, 160, 170)
     for r in range(rows + 1):
-        arr[min(r * ch, h - 1), :] = (118, 130, 144)
+        arr[min(r * ch, h - 1), :] = (150, 160, 170)
     return arr
 
 
@@ -101,8 +139,9 @@ def wood_tex():
 
 
 def make_textures():
+    sand_arr, sand_normal = sand_tex()
     specs = {
-        "sand": sand_tex(),
+        "sand": sand_arr,
         "panel": panel_tex(),
         "panel_back": noise_tex(16, 16, (200, 204, 208), 4, 31),
         "panel_frame": noise_tex(16, 16, (128, 132, 138), 4, 33),
@@ -127,7 +166,9 @@ def make_textures():
     }
     for name, arr in specs.items():
         save_png(os.path.join(TEX_DIR, name + ".png"), arr)
-    save_png(os.path.join(GODOT_TEX, "sand.png"), specs["sand"])
+    save_png(os.path.join(GODOT_TEX, "sand.png"), sand_arr)
+    save_png(os.path.join(GODOT_TEX, "sand_normal.png"), sand_normal)
+    save_png(os.path.join(GODOT_TEX, "track.png"), track_tex())
     return specs
 
 
@@ -308,20 +349,21 @@ def decal(name, size, loc, rot_mat, mat, parent=None):
 
 
 def build_robot():
-    white = M("white", rough=0.7)
-    dark = M("dark", rough=0.8)
-    green = M("green", rough=0.75)
-    orange = M("orange", rough=0.85)
-    orange_dark = M("orange_dark", rough=0.9)
-    steel = M("steel", rough=0.35, metal=0.7)
-    silver = M("panel_frame", rough=0.35, metal=0.5)
+    white = M("white", rough=0.58)
+    dark = M("dark", rough=0.72)
+    green = M("green", rough=0.62)
+    orange = M("orange", rough=0.72)
+    orange_dark = M("orange_dark", rough=0.82)
+    steel = M("steel", rough=0.28, metal=0.8)
+    silver = M("panel_frame", rough=0.30, metal=0.65)
     rubber = M("rubber", rough=0.95)
-    blue = M("blue", rough=0.45)
-    red = M("red", rough=0.7)
-    glass = M("glass", rough=0.2)
+    blue = M("blue", rough=0.35)
+    red = M("red", rough=0.6)
+    glass = M("glass", rough=0.15)
     logo = M("logo", rough=0.6)
     light = emissive("headlamp", (1.0, 0.9, 0.65), 4.0)
     beacon = emissive("beacon", (1.0, 0.55, 0.1), 6.0)
+    hazard = M("hazard", rough=0.7)
 
     root = empty("MMR_Root", (0, 0, 0))
     chassis = empty("Chassis", (0, 0, 0), root)
@@ -331,6 +373,10 @@ def build_robot():
         box(f"Track_{side}", (0.7, 4.6, 1.0), (x, 0, 0.5), rubber, chassis)
         box(f"TrackStrip_{side}", (0.04, 1.7, 0.13), (x * 1.34, 0.45, 0.3), red, chassis)
         box(f"TrackFrame_{side}", (0.5, 4.2, 0.55), (x, 0, 0.55), dark, chassis)
+        track_obj = bpy.data.objects[f"Track_{side}"]
+        for i, yy in enumerate(np.arange(-2.05, 2.06, 0.34)):
+            box(f"TrackTread_{side}_{i}", (0.08, 0.20, 0.14),
+                (x + (-0.38 if side == "L" else 0.38), float(yy), 0.52), rubber, track_obj)
     # 绿色裙边
     box("Skirt", (2.0, 4.2, 0.45), (0, 0, 1.16), green, chassis)
     for x in (-1.005, 1.005):
@@ -372,6 +418,7 @@ def build_robot():
         box(f"SensorLens_{x}", (0.1, 0.02, 0.09), (x, 2.11, 2.1), glass, chassis)
     box("FrontBumper", (2.04, 0.12, 0.22), (0, 2.03, 1.32), white, chassis)
     box("FrontBumperGreen", (1.4, 0.03, 0.06), (0, 2.1, 1.32), green, chassis)
+    box("FrontHazard", (1.4, 0.02, 0.08), (0, 2.1, 1.42), hazard, chassis)
     # 前部牵引：随行料车挂在与控制柜相反的一端（车体本身不带料架）
     box("FrontHitchMount", (1.7, 0.22, 0.18), (0, 2.0, 0.62), dark, chassis)
     box("FrontDrawbar", (0.22, 1.15, 0.18), (0, 2.5, 0.55), steel, chassis)
@@ -403,6 +450,11 @@ def build_robot():
         box(f"BootBand_{z}", (w, w, 0.035), (0, 0, z), orange_dark, turret)
     box("TurretJoint", (0.7, 0.7, 0.3), (0, 0, 3.0), orange_dark, turret)
     box("ArmPin", (0.78, 0.46, 0.28), (0, 0, 3.05), silver, turret)
+    axle_rot = Matrix.Rotation(math.radians(90), 4, "Y").to_quaternion()
+    cyl("ShoulderAxle", 0.17, 0.94, (0, 0, 3.05), steel, verts=12, rot=axle_rot, parent=turret)
+    for sgn, tag in ((-1, "L"), (1, "R")):
+        cyl(f"ShoulderBolt_{tag}", 0.075, 0.05, (sgn * 0.49, 0, 3.05), dark,
+            verts=6, rot=axle_rot, parent=turret)
 
     # 下臂（橙色布套 + 黑色管线）
     arm_lower = empty("ArmLower", (0, 0, 3.05), turret)
@@ -412,6 +464,13 @@ def build_robot():
         box(f"LowerBand_{y}", (0.58, 0.06, 0.58), (0, y, 3.05), orange_dark, arm_lower)
     box("LowerHose", (0.07, 2.3, 0.07), (0.22, 1.25, 3.36), dark, arm_lower)
     box("LowerHoseClamp", (0.1, 0.14, 0.1), (0.22, 2.1, 3.34), steel, arm_lower)
+    hydro_rot = Matrix.Rotation(math.radians(-90), 4, "X").to_quaternion()
+    cyl("LowerHydraulicBody", 0.10, 1.25, (-0.36, 0.95, 2.78), dark,
+        verts=10, rot=hydro_rot, parent=arm_lower)
+    cyl("LowerHydraulicRod", 0.045, 0.95, (-0.36, 1.98, 2.78), steel,
+        verts=10, rot=hydro_rot, parent=arm_lower)
+    cyl("LowerHydraulicCollar", 0.12, 0.10, (-0.36, 1.56, 2.78), silver,
+        verts=10, rot=hydro_rot, parent=arm_lower)
 
     # 上臂：加长到吸盘架中心（肘 y=2.5 → 腕 y=5.8）
     arm_upper = empty("ArmUpper", (0, 2.5, 3.05), arm_lower)
@@ -420,11 +479,25 @@ def build_robot():
     for y in (2.85, 3.2, 3.55, 3.9, 4.25, 4.6, 4.95, 5.3):
         box(f"UpperBand_{y}", (0.48, 0.06, 0.48), (0, y, 3.05), orange_dark, arm_upper)
     box("UpperHose", (0.06, 3.0, 0.06), (0.17, 4.15, 3.3), dark, arm_upper)
+    cyl("ElbowAxle", 0.16, 0.86, (0, 2.5, 3.05), steel, verts=12, rot=axle_rot, parent=arm_lower)
+    for sgn, tag in ((-1, "L"), (1, "R")):
+        cyl(f"ElbowBolt_{tag}", 0.07, 0.05, (sgn * 0.45, 2.5, 3.05), dark,
+            verts=6, rot=axle_rot, parent=arm_lower)
+    cyl("UpperHydraulicBody", 0.09, 1.45, (0.31, 3.55, 2.80), dark,
+        verts=10, rot=hydro_rot, parent=arm_upper)
+    cyl("UpperHydraulicRod", 0.04, 1.00, (0.31, 4.78, 2.80), steel,
+        verts=10, rot=hydro_rot, parent=arm_upper)
+    cyl("UpperHydraulicCollar", 0.11, 0.09, (0.31, 4.28, 2.80), silver,
+        verts=10, rot=hydro_rot, parent=arm_upper)
 
     # 腕部：连接点即吸盘架几何中心（y=5.8）
     wrist = empty("Wrist", (0, 5.8, 3.05), arm_upper)
     box("WristJoint", (0.62, 0.62, 0.62), (0, 5.8, 3.05), orange_dark, wrist)
     box("WristSleeve", (0.36, 0.3, 0.36), (0, 5.62, 3.05), orange, wrist)
+    cyl("WristAxle", 0.14, 0.76, (0, 5.8, 3.05), steel, verts=12, rot=axle_rot, parent=arm_upper)
+    for sgn, tag in ((-1, "L"), (1, "R")):
+        cyl(f"WristBolt_{tag}", 0.06, 0.05, (sgn * 0.40, 5.8, 3.05), dark,
+            verts=6, rot=axle_rot, parent=arm_upper)
     for i in range(3):
         box(f"CableLoop_{i}", (0.07, 0.09, 0.07), (0.14 - i * 0.06, 5.78 + i * 0.05, 3.42), dark, wrist)
 
@@ -455,9 +528,9 @@ def build_robot():
 # ---------------------------------------------------------------- 组件 / 轨道
 def build_panel_asset():
     reset_scene()
-    frame_mat = M("panel_frame", rough=0.45, metal=0.4)
-    cells = M("panel", rough=0.5)
-    back = M("panel_back", rough=0.8)
+    frame_mat = M("panel_frame", rough=0.30, metal=0.65)
+    cells = M("panel", rough=0.26, metal=0.18)
+    back = M("panel_back", rough=0.75)
     root = empty("PVPanel", (0, 0, 0))
     box("PanelFrame", (2.4, 1.2, 0.09), (0, 0, 0), frame_mat, root)
     box("PanelCells", (2.33, 1.13, 0.02), (0, 0, 0.05), cells, root)
@@ -476,10 +549,10 @@ def _panel(name, center, tilt_deg, parent, cells, frame_mat):
 
 def build_row_asset():
     reset_scene()
-    steel = M("steel", rough=0.4, metal=0.6)
+    steel = M("steel", rough=0.32, metal=0.7)
     dark = M("dark", rough=0.8)
-    cells = M("panel", rough=0.5)
-    frame_mat = M("panel_frame", rough=0.45, metal=0.4)
+    cells = M("panel", rough=0.26, metal=0.18)
+    frame_mat = M("panel_frame", rough=0.30, metal=0.65)
     root = empty("ArrayRow", (0, 0, 0))
     # 轨道：row 沿 Y，纵向组件，20° 倾角
     for x, top in ((-0.55, 1.575), (0.55, 1.175)):
@@ -494,7 +567,7 @@ def build_row_asset():
 
 def build_work_row_asset():
     reset_scene()
-    steel = M("steel", rough=0.4, metal=0.6)
+    steel = M("steel", rough=0.32, metal=0.7)
     dark = M("dark", rough=0.8)
     root = empty("WorkRow", (0, 0, 0))
     for x, top in ((-0.55, 1.575), (0.55, 1.175)):
@@ -511,6 +584,7 @@ def build_trailer_asset():
     dark = M("dark", rough=0.9)
     steel = M("steel", rough=0.35, metal=0.7)
     yellow = M("yellow", rough=0.7)
+    rubber = M("rubber", rough=0.95)
     wood = M("wood", rough=1.0)
     root = empty("PanelTrailer", (0, 0, 0))
     # 紧凑四轮底盘（实机：低车架 + 倾斜料鼓）
@@ -518,8 +592,20 @@ def build_trailer_asset():
     box("TrailerFrame", (2.4, 1.6, 0.10), (0, 0, 0.90), steel, root)
     for x in (-1.32, 1.32):
         for y in (-0.7, 0.7):
-            box(f"Tire_{x}_{y}", (0.55, 0.44, 0.55), (x, y, 0.36), dark, root)
-            box(f"Hub_{x}_{y}", (0.30, 0.48, 0.30), (x, y, 0.36), yellow, root)
+            wheel = empty(f"Wheel_{x}_{y}", (x, y, 0.36), root)
+            wheel_rot = Matrix.Rotation(math.radians(90), 4, "Y").to_quaternion()
+            cyl(f"Tire_{x}_{y}", 0.36, 0.30, (x, y, 0.36), dark,
+                verts=12, rot=wheel_rot, parent=wheel)
+            cyl(f"Hub_{x}_{y}", 0.19, 0.32, (x, y, 0.36), yellow,
+                verts=8, rot=wheel_rot, parent=wheel)
+            cyl(f"Axle_{x}_{y}", 0.07, 0.36, (x, y, 0.36), steel,
+                verts=8, rot=wheel_rot, parent=wheel)
+            for i in range(10):
+                a = math.tau * i / 10.0
+                tread_rot = Matrix.Rotation(a - math.pi / 2.0, 4, "X").to_quaternion()
+                box(f"Tread_{x}_{y}_{i}", (0.32, 0.12, 0.07),
+                    (x, y + math.cos(a) * 0.36, 0.36 + math.sin(a) * 0.36),
+                    rubber, wheel, tread_rot)
     # 料鼓支撑座
     box("DrumMount", (1.4, 1.0, 0.70), (0, 0.05, 1.22), steel, root)
     box("DrumBase", (1.8, 1.3, 0.12), (0, 0.05, 1.62), dark, root)

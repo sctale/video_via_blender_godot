@@ -24,7 +24,7 @@ var align_locked := false
 var show_brackets := false
 
 const CALL_OUTS := [
-	{"key": "body", "label": "履带底盘", "at": 10.8, "dx": -190.0, "dy": 130.0, "out": 20.0},
+	{"key": "body", "label": "履带底盘", "at": 10.8, "dx": -190.0, "dy": 80.0, "out": 20.0},
 	{"key": "arm", "label": "机械臂", "at": 13.4, "dx": 175.0, "dy": -90.0},
 	{"key": "effector", "label": "真空吸盘", "at": 16.0, "dx": 165.0, "dy": 80.0},
 	{"key": "vision", "label": "3D 视觉", "at": 18.6, "dx": -180.0, "dy": -95.0},

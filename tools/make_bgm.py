@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-"""原创轻氛围/芯片音乐 BGM（numpy 合成），时长随 timeline.json"""
+"""原创分层氛围 BGM（numpy/scipy 合成），时长随 timeline.json。"""
 import json
 import os
-import wave
 
 import numpy as np
+from scipy.io import wavfile
+from scipy.signal import butter, sosfilt
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SR = 44100
+SR = 48000
+rng = np.random.default_rng(20261117)
 
 
 def env_adsr(n, a, d, s, r, sustain=0.65):
@@ -24,7 +26,7 @@ def env_adsr(n, a, d, s, r, sustain=0.65):
     return e[:n]
 
 
-def tone(freq, dur, kind="sine", detune=0.0, a=0.01, d=0.1, s=0.5, r=0.2, sustain=0.7):
+def tone(freq, dur, kind="sine", detune=0.0, a=0.01, d=0.1, s=0.2, r=0.2, sustain=0.7):
     n = int(dur * SR)
     t = np.arange(n) / SR
     f = freq * (1 + detune)
@@ -38,37 +40,44 @@ def tone(freq, dur, kind="sine", detune=0.0, a=0.01, d=0.1, s=0.5, r=0.2, sustai
 
 
 def note(name):
-    names = {"C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5, "F#": 6, "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11}
+    names = {"C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5, "F#": 6,
+             "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11}
     pitch, octave = name[:-1], int(name[-1])
     midi = 12 * (octave + 1) + names[pitch]
     return 440.0 * 2 ** ((midi - 69) / 12)
 
 
-def add(buf, sig, at):
+def add(buf, sig, at, gain=1.0, pan=0.5):
     i = int(at * SR)
     if i >= len(buf):
         return
     n = min(len(sig), len(buf) - i)
-    buf[i:i + n] += sig[:n]
+    buf[i:i+n, 0] += sig[:n] * gain * (1.2 - pan)
+    buf[i:i+n, 1] += sig[:n] * gain * pan
+
+
+def lowpass(x, cutoff):
+    return sosfilt(butter(2, cutoff, btype="lowpass", fs=SR, output="sos"), x)
 
 
 def main():
     with open(os.path.join(ROOT, "godot", "data", "timeline.json"), encoding="utf-8") as f:
-        duration = json.load(f)["duration"]
+        duration = float(json.load(f)["duration"])
     total = duration + 2.0
     n = int(total * SR)
-    left = np.zeros(n)
-    right = np.zeros(n)
+    buf = np.zeros((n, 2))
 
     bpm = 72
     beat = 60.0 / bpm
     chords = [
-        ["C4", "E4", "G4", "B4"],
-        ["A3", "C4", "E4", "G4"],
-        ["F3", "A3", "C4", "E4"],
-        ["G3", "B3", "D4", "E4"],
+        ["C3", "E3", "G3", "B3"],
+        ["A2", "C3", "E3", "G3"],
+        ["F2", "A2", "C3", "E3"],
+        ["G2", "B2", "D3", "E3"],
     ]
-    # 铺底 pad：每 4 拍换和弦
+    roots = ["C2", "A1", "F1", "G1"]
+
+    # 和声铺底：每 4 拍换和弦，轻微失谐 + 低通，避免数字味
     t = 0.0
     ci = 0
     while t < total - 1:
@@ -76,55 +85,69 @@ def main():
         dur = beat * 4
         for k, nm in enumerate(chord):
             f = note(nm)
-            sig = tone(f, dur + 0.8, "sine", detune=0.0015 * (1 if k % 2 else -1),
-                       a=1.1, d=0.4, s=0.25, r=1.4, sustain=0.5)
-            pan = 0.5 + 0.12 * (k - 1.5) / 3
-            add(left, sig * 0.09 * (1 - pan + 0.3), t)
-            add(right, sig * 0.09 * (pan + 0.3), t)
+            sig = tone(f, dur + 1.0, "sine", detune=0.0018 * (1 if k % 2 else -1),
+                       a=0.9, d=0.5, s=0.22, r=1.3, sustain=0.55)
+            sig += tone(f * 2, dur + 1.0, "tri", a=1.2, d=0.6, s=0.08, r=1.4, sustain=0.25) * 0.18
+            add(buf, sig, t, 0.050, 0.32 + 0.12 * k)
+        # 低音根部，长音
+        bass = tone(note(roots[ci % len(roots)]), dur + 0.6, "sine",
+                    a=0.25, d=0.4, s=0.35, r=0.8, sustain=0.6)
+        add(buf, bass, t, 0.085, 0.5)
         ci += 1
         t += dur
 
-    # 轻盈琶音
-    rng = np.random.default_rng(2026)
+    # 琶音：半拍一次，段落 6 暂时收薄，片尾回到主和弦
     penta = ["C5", "D5", "E5", "G5", "A5", "E4", "G4", "A4", "C5"]
     t = beat
     i = 0
     while t < total - 1:
-        if rng.random() < 0.62:
-            nm = penta[i % len(penta)] if rng.random() < 0.7 else penta[int(rng.integers(0, len(penta)))]
+        if not (55.5 < t < 64.0):
+            nm = penta[i % len(penta)] if rng.random() < 0.72 else penta[int(rng.integers(0, len(penta)))]
             f = note(nm)
-            sig = tone(f, 0.9, "tri", a=0.004, d=0.5, s=0.12, r=0.5, sustain=0.25)
-            pan = rng.uniform(0.25, 0.75)
-            add(left, sig * 0.055 * (1.3 - pan), t)
-            add(right, sig * 0.055 * pan, t)
+            sig = tone(f, 0.75, "tri", a=0.004, d=0.35, s=0.08, r=0.35, sustain=0.20)
+            add(buf, sig, t, 0.040, 0.28 + 0.44 * ((i % 5) / 4.0))
             i += 1
-        t += beat * 2
+        t += beat * 0.5
 
-    # 低频沙地风声
-    w = rng.normal(0, 1, n)
-    kernel = np.ones(600) / 600
-    w = np.convolve(w, kernel, mode="same")
-    w = w / (np.abs(w).max() + 1e-9) * 0.035
-    left += w
-    right += np.roll(w, 400) * 0.9
+    # 轻脉冲：8s 后进入，落板后短暂留白
+    t = 8.0
+    while t < 82.0:
+        if not (55.5 < t < 64.0):
+            kick = tone(58, 0.28, "sine", a=0.002, d=0.08, s=0.05, r=0.15, sustain=0.15)
+            add(buf, kick, t, 0.050, 0.5)
+            sh = rng.normal(0, 1, int(0.09 * SR))
+            sh = sosfilt(butter(2, 5500, btype="highpass", fs=SR, output="sos"), sh)
+            sh *= np.exp(-np.arange(len(sh)) / SR * 45)
+            add(buf, sh, t + beat * 0.5, 0.010, 0.62)
+        t += beat
 
-    # 淡入淡出
-    fade = int(2.0 * SR)
-    for buf in (left, right):
-        buf[:fade] *= np.linspace(0, 1, fade)
-        buf[-fade:] *= np.linspace(1, 0, fade)
-    peak = max(np.abs(left).max(), np.abs(right).max())
-    gain = 0.85 / peak
-    left *= gain
-    right *= gain
-    stereo = np.stack([left, right], axis=1)
-    pcm = (np.clip(stereo, -1, 1) * 32767).astype(np.int16)
+    # 两次动作前的上升音
+    for start, end in ((22.4, 23.66), (63.4, 64.68), (76.4, 77.2)):
+        dur = end - start
+        m = int(dur * SR)
+        x = rng.normal(0, 1, m)
+        x = sosfilt(butter(2, [500, 5200], btype="bandpass", fs=SR, output="sos"), x)
+        x /= np.abs(x).max() + 1e-9
+        x *= np.linspace(0, 1, m) ** 1.8
+        add(buf, x, start, 0.055, 0.5)
+
+    # 片尾主和弦长音
+    for k, nm in enumerate(["C3", "E3", "G3", "B3", "C4"]):
+        sig = tone(note(nm), 6.0, "sine", a=0.7, d=0.8, s=0.25, r=2.2, sustain=0.5)
+        add(buf, sig, 81.8, 0.045, 0.30 + 0.10 * k)
+
+    # 整体低通、淡入淡出、峰值归一
+    for ch in range(2):
+        buf[:, ch] = lowpass(buf[:, ch], 5200)
+    fade_in = int(1.5 * SR)
+    fade_out = int(2.5 * SR)
+    buf[:fade_in] *= np.linspace(0, 1, fade_in)[:, None]
+    buf[-fade_out:] *= np.linspace(1, 0, fade_out)[:, None]
+    peak = np.abs(buf).max()
+    buf *= 0.72 / (peak + 1e-9)
+    pcm = (np.clip(buf, -1, 1) * 32767).astype(np.int16)
     path = os.path.join(ROOT, "audio", "bgm.wav")
-    with wave.open(path, "wb") as f:
-        f.setnchannels(2)
-        f.setsampwidth(2)
-        f.setframerate(SR)
-        f.writeframes(pcm.tobytes())
+    wavfile.write(path, SR, pcm)
     print(f"BGM {total:.2f}s -> {path}")
 
 

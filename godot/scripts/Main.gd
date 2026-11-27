@@ -43,6 +43,10 @@ var carried: Node3D
 var camera: Camera3D
 var hud
 var cloud_meta: Array = []
+var wheel_nodes: Array[Node3D] = []
+var track_treads: Array[Dictionary] = []
+var travel_dust: CPUParticles3D
+var impact_dust: CPUParticles3D
 
 var pose_keys: Array = []
 var events: Array = []
@@ -68,6 +72,7 @@ func _ready() -> void:
 	_build_props()
 	_build_robot()
 	_build_camera()
+	_build_post()
 	_build_hud()
 	_build_timeline_data()
 	if still_mode:
@@ -158,27 +163,49 @@ func _build_timeline_data() -> void:
 		{"t": 74.9, "action": "detach"},
 	]
 	shots = [
-		{"t0": 0.0, "t1": 8.0, "p0": Vector3(23, 8, 0.0), "p1": Vector3(17, 5.5, 2.5),
-		 "l0": Vector3(2.0, 1.5, 7.0), "l1": Vector3(2.2, 1.7, 7.0), "f0": 40.0, "f1": 37.0},
-		{"t0": 8.0, "t1": 23.66, "orbit": true, "c": Vector3(3.8, 0, 7.2),
-		 "r0": 15.5, "r1": 13.5, "a0": deg_to_rad(-45.0), "a1": deg_to_rad(15.0),
-		 "h0": 5.2, "h1": 4.1, "l": Vector3(3.2, 1.9, 7.4), "f": 38.0},
-		{"t0": 23.66, "t1": 35.66, "p0": Vector3(12.0, 2.4, 5.8), "p1": Vector3(13.8, 6.0, 2.4),
-		 "l0": Vector3(3.8, 1.8, 4.9), "l1": Vector3(3.8, 3.5, 4.7), "f0": 42.0, "f1": 42.0},
-		{"t0": 35.66, "t1": 44.68, "p0": Vector3(10.5, 7.5, 1.0), "p1": Vector3(9.0, 6.8, 5.5),
-		 "follow": true, "loff": Vector3(0, 0.1, 0), "f": 40.0},
-		{"t0": 44.68, "t1": 55.68, "p0": Vector3(2.2, 3.3, 5.9), "p1": Vector3(1.9, 3.1, 6.3),
-		 "l0": Vector3(0.4, 1.85, 10.0), "l1": Vector3(0.35, 1.8, 10.0), "f0": 33.0, "f1": 32.0},
-		{"t0": 55.68, "t1": 64.68, "p0": Vector3(3.4, 4.0, 4.8), "p1": Vector3(3.0, 3.7, 5.2),
-		 "l0": Vector3(0.4, 1.55, 10.0), "l1": Vector3(0.4, 1.5, 10.0), "f0": 33.0, "f1": 33.0},
-		{"t0": 64.68, "t1": 71.0, "p0": Vector3(15.0, 6.6, 3.2), "p1": Vector3(13.2, 6.0, 3.8),
-		 "l0": Vector3(3.8, 2.2, 4.5), "l1": Vector3(3.8, 2.4, 4.3), "f0": 40.0, "f1": 40.0},
-		{"t0": 71.0, "t1": 74.8, "p0": Vector3(13.0, 6.8, 4.6), "p1": Vector3(9.0, 5.8, 11.0),
-		 "follow": true, "loff": Vector3(0, 0.1, 0), "f": 40.0},
-		{"t0": 74.8, "t1": 77.2, "p0": Vector3(3.3, 4.2, 3.7), "p1": Vector3(3.1, 4.0, 4.1),
-		 "l0": Vector3(0.2, 1.55, 8.85), "l1": Vector3(0.2, 1.5, 8.8), "f0": 33.0, "f1": 33.0},
-		{"t0": 77.2, "t1": 87.68, "p0": Vector3(23, 10, 2), "p1": Vector3(32, 14, -4),
-		 "l0": Vector3(2, 1.5, 7), "l1": Vector3(2, 1.5, 7), "f0": 40.0, "f1": 42.0},
+		{"t0": 0.0, "t1": 4.0, "p0": Vector3(18, 3.2, 18), "p1": Vector3(14, 4.5, 14),
+		 "l0": Vector3(3.8, 1.6, 7), "l1": Vector3(3.8, 1.8, 7), "f0": 42.0, "f1": 38.0, "ease": "out"},
+		{"t0": 4.0, "t1": 8.0, "p0": Vector3(24, 14, 22), "p1": Vector3(20, 11, 18),
+		 "l0": Vector3(2, 0, 7), "l1": Vector3(2, 0.5, 7), "f0": 45.0, "f1": 42.0, "ease": "smooth"},
+		{"t0": 8.0, "t1": 13.0, "p0": Vector3(18, 4.2, 7), "p1": Vector3(15, 3.4, 7),
+		 "l0": Vector3(3.8, 1.7, 7), "l1": Vector3(3.8, 1.8, 7), "f0": 38.0, "f1": 36.0, "ease": "linear"},
+		{"t0": 13.0, "t1": 17.0, "p0": Vector3(10, 4.8, 12), "p1": Vector3(8.5, 4.2, 11),
+		 "l0": Vector3(3.8, 3.0, 10), "l1": Vector3(3.8, 3.2, 10), "f0": 32.0, "f1": 30.0, "ease": "smooth"},
+		{"t0": 17.0, "t1": 21.0, "p0": Vector3(10, 3.2, 1), "p1": Vector3(8, 2.8, 2),
+		 "l0": Vector3(3.8, 1.7, 4.4), "l1": Vector3(3.8, 1.9, 4.4), "f0": 34.0, "f1": 32.0, "ease": "out"},
+		{"t0": 21.0, "t1": 23.66, "p0": Vector3(9, 1.8, 2), "p1": Vector3(8, 2.2, 3),
+		 "l0": Vector3(3.8, 2.0, 4.4), "l1": Vector3(3.8, 2.2, 4.4), "f0": 36.0, "f1": 35.0, "ease": "smooth"},
+		{"t0": 23.66, "t1": 27.6, "p0": Vector3(11, 3.0, 13), "p1": Vector3(10, 3.4, 12),
+		 "l0": Vector3(3.8, 2.3, 6.5), "l1": Vector3(3.8, 2.6, 5.5), "f0": 40.0, "f1": 38.0, "ease": "smooth"},
+		{"t0": 27.6, "t1": 30.9, "p0": Vector3(8.5, 3.4, 7.5), "p1": Vector3(7.8, 3.0, 7.0),
+		 "l0": Vector3(3.8, 2.5, 4.9), "l1": Vector3(3.8, 2.55, 4.9), "f0": 30.0, "f1": 28.0, "ease": "out"},
+		{"t0": 30.9, "t1": 35.66, "p0": Vector3(11, 3.2, 6), "p1": Vector3(10, 4.5, 5),
+		 "l0": Vector3(3.8, 2.8, 5.5), "l1": Vector3(3.8, 3.2, 6.5), "f0": 36.0, "f1": 35.0, "ease": "smooth"},
+		{"t0": 35.66, "t1": 40.4, "follow": true, "offset": Vector3(7, 4, -4),
+		 "loff": Vector3(0, 0.1, 0), "f": 38.0, "ease": "linear"},
+		{"t0": 40.4, "t1": 44.68, "p0": Vector3(12, 4.5, 16), "p1": Vector3(10, 4, 15),
+		 "l0": Vector3(0, 1.6, 10), "l1": Vector3(0, 1.5, 10), "f0": 30.0, "f1": 28.0, "ease": "out"},
+		{"t0": 44.68, "t1": 49.0, "p0": Vector3(3, 9, 13), "p1": Vector3(2.5, 8, 12.5),
+		 "l0": Vector3(0, 1.4, 10), "l1": Vector3(0, 1.4, 10), "f0": 34.0, "f1": 32.0, "ease": "smooth"},
+		{"t0": 49.0, "t1": 55.68, "p0": Vector3(5, 3.2, 13), "p1": Vector3(4.5, 2.8, 12.5),
+		 "l0": Vector3(0, 1.5, 10), "l1": Vector3(0, 1.45, 10), "f0": 32.0, "f1": 30.0, "ease": "out"},
+		{"t0": 55.68, "t1": 60.8, "p0": Vector3(12, 4, 16), "p1": Vector3(11, 3.5, 15),
+		 "l0": Vector3(3.8, 1.8, 9), "l1": Vector3(3.8, 2.0, 8), "f0": 36.0, "f1": 35.0, "ease": "smooth"},
+		{"t0": 60.8, "t1": 64.68, "p0": Vector3(20, 6, 18), "p1": Vector3(18, 5, 16),
+		 "l0": Vector3(3.8, 1.5, 8), "l1": Vector3(3.8, 1.6, 8), "f0": 40.0, "f1": 38.0, "ease": "linear"},
+		{"t0": 64.68, "t1": 68.0, "p0": Vector3(10, 2.4, 13), "p1": Vector3(9, 2.2, 12),
+		 "l0": Vector3(3.8, 0.8, 9.5), "l1": Vector3(3.8, 0.8, 9.2), "f0": 34.0, "f1": 33.0, "ease": "smooth"},
+		{"t0": 68.0, "t1": 71.0, "p0": Vector3(8, 3.0, 2), "p1": Vector3(7.2, 2.7, 2.5),
+		 "l0": Vector3(3.8, 2.1, 4.4), "l1": Vector3(3.8, 2.2, 4.4), "f0": 32.0, "f1": 30.0, "ease": "out"},
+		{"t0": 71.0, "t1": 74.8, "follow": true, "offset": Vector3(6, 3, 4),
+		 "loff": Vector3(0, 0.1, 0), "f": 36.0, "ease": "smooth"},
+		{"t0": 74.8, "t1": 77.2, "p0": Vector3(1.5, 3.0, 13), "p1": Vector3(1.0, 2.6, 12.5),
+		 "l0": Vector3(0, 1.5, 8.75), "l1": Vector3(0, 1.5, 8.75), "f0": 32.0, "f1": 30.0, "ease": "out"},
+		{"t0": 77.2, "t1": 82.0, "orbit": true, "c": Vector3(3.8, 0, 7.2),
+		 "r0": 14.0, "r1": 11.0, "a0": deg_to_rad(-30.0), "a1": deg_to_rad(25.0),
+		 "h0": 4.5, "h1": 3.5, "l": Vector3(3.8, 1.7, 7), "f": 38.0, "ease": "smooth"},
+		{"t0": 82.0, "t1": 87.68, "p0": Vector3(20, 9, 16), "p1": Vector3(30, 13, 24),
+		 "l0": Vector3(2, 1.2, 7), "l1": Vector3(2, 1.2, 7), "f0": 42.0, "f1": 44.0, "ease": "out"},
 	]
 
 
@@ -188,51 +215,68 @@ func _build_environment() -> void:
 	var env := Environment.new()
 	var sky := Sky.new()
 	var sky_mat := ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color = Color("#3f93e8")
-	sky_mat.sky_horizon_color = Color("#b7d9f7")
-	sky_mat.ground_bottom_color = Color("#bfa877")
-	sky_mat.ground_horizon_color = Color("#e3d3b0")
-	sky_mat.sun_angle_max = 0.0
-	sky_mat.sky_energy_multiplier = 1.0
+	sky_mat.sky_top_color = Color("#3f7fb0")
+	sky_mat.sky_horizon_color = Color("#f2c58f")
+	sky_mat.ground_bottom_color = Color("#7a5c3a")
+	sky_mat.ground_horizon_color = Color("#d8b47c")
+	sky_mat.sun_angle_max = 3.0
+	sky_mat.sky_energy_multiplier = 0.85
 	sky.sky_material = sky_mat
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.9
+	env.ambient_light_color = Color("#9fb6cc")
+	env.ambient_light_energy = 0.48
+	env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 1.0
+	env.tonemap_exposure = 1.12
+	env.adjustment_enabled = true
+	env.adjustment_brightness = 1.0
+	env.adjustment_contrast = 1.08
+	env.adjustment_saturation = 1.04
 	env.ssao_enabled = true
-	env.ssao_radius = 2.0
-	env.ssao_intensity = 1.4
+	env.ssao_radius = 1.25
+	env.ssao_intensity = 1.15
+	env.ssao_detail = 0.35
 	env.glow_enabled = true
-	env.glow_intensity = 0.3
-	env.glow_bloom = 0.04
-	env.glow_hdr_threshold = 1.2
+	env.glow_intensity = 0.22
+	env.glow_bloom = 0.025
+	env.glow_hdr_threshold = 1.05
 	env.fog_enabled = true
-	env.fog_light_color = Color("#e9d9b6")
-	env.fog_light_energy = 0.45
-	env.fog_density = 0.0022
-	env.fog_sky_affect = 0.25
+	env.fog_light_color = Color("#e8c58f")
+	env.fog_light_energy = 0.55
+	env.fog_sun_scatter = 0.12
+	env.fog_density = 0.0038
+	env.fog_sky_affect = 0.18
+	env.fog_height = 1.0
+	env.fog_height_density = 0.08
 	we.environment = env
 	add_child(we)
 
 	var sun := DirectionalLight3D.new()
-	sun.light_color = Color("#fff0d6")
-	sun.light_energy = 1.25
+	sun.light_color = Color("#ffd39a")
+	sun.light_energy = 1.65
 	sun.shadow_enabled = true
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
-	sun.directional_shadow_max_distance = 140.0
-	sun.shadow_bias = 0.03
-	sun.shadow_normal_bias = 1.5
+	sun.directional_shadow_max_distance = 120.0
+	sun.shadow_bias = 0.02
+	sun.shadow_normal_bias = 0.45
 	add_child(sun)
-	sun.look_at_from_position(Vector3(52, 46, 28), Vector3(3.8, 0, 10))
+	sun.look_at_from_position(Vector3(58, 30, 38), Vector3(3.8, 0, 10))
 
 	var fill := DirectionalLight3D.new()
-	fill.light_color = Color("#cfe4ff")
-	fill.light_energy = 0.35
+	fill.light_color = Color("#a9c9ee")
+	fill.light_energy = 0.38
 	fill.shadow_enabled = false
 	add_child(fill)
-	fill.look_at_from_position(Vector3(30, 20, 50), Vector3(0, 0, 0))
+	fill.look_at_from_position(Vector3(25, 18, 55), Vector3(0, 0, 0))
+
+	var rim := DirectionalLight3D.new()
+	rim.light_color = Color("#9fc7ff")
+	rim.light_energy = 0.42
+	rim.shadow_enabled = false
+	add_child(rim)
+	rim.look_at_from_position(Vector3(-35, 22, -30), Vector3(3.8, 1.5, 7))
 
 	var q := QuadMesh.new()
 	q.size = Vector2(18, 18)
@@ -256,8 +300,11 @@ func _build_ground() -> void:
 	ground.mesh = pm
 	var mat := StandardMaterial3D.new()
 	mat.albedo_texture = load("res://assets/textures/sand.png")
-	mat.uv1_scale = Vector3(180, 180, 1)
-	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS_ANISOTROPIC
+	mat.uv1_scale = Vector3(55, 55, 1)
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	mat.normal_enabled = true
+	mat.normal_texture = load("res://assets/textures/sand_normal.png")
+	mat.normal_scale = 0.45
 	mat.roughness = 1.0
 	ground.material_override = mat
 	add_child(ground)
@@ -275,6 +322,20 @@ func _build_ground() -> void:
 	lane.material_override = lmat
 	lane.position = Vector3(ROBOT_X, 0.012, 2.0)
 	add_child(lane)
+
+	# 换位车辙：两条透明胎纹，跟随实际 1.25m 位移
+	var tracks := MeshInstance3D.new()
+	var tm := PlaneMesh.new()
+	tm.size = Vector2(2.6, 3.2)
+	tracks.mesh = tm
+	var tmat := StandardMaterial3D.new()
+	tmat.albedo_texture = load("res://assets/textures/track.png")
+	tmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	tmat.albedo_color = Color(0.55, 0.42, 0.25, 0.55)
+	tmat.roughness = 1.0
+	tracks.material_override = tmat
+	tracks.position = Vector3(ROBOT_X, 0.025, 9.55)
+	add_child(tracks)
 
 
 func _nearest_materials(node: Node) -> void:
@@ -428,6 +489,12 @@ func _build_robot() -> void:
 	trailer.rotation_degrees.y = 180.0
 	robot.add_child(trailer)
 	_nearest_materials(trailer)
+	for n in trailer.find_children("Wheel_*", "Node3D", true, false):
+		wheel_nodes.append(n as Node3D)
+	for n in robot.find_children("TrackTread_*", "Node3D", true, false):
+		track_treads.append({"node": n as Node3D, "base": (n as Node3D).position.z})
+	travel_dust = _make_dust(robot, Vector3(0, 0.18, 2.0), 36)
+	impact_dust = _make_dust(self, Vector3.ZERO, 28)
 
 	# 倾斜料鼓上的组件（Godot 生成，便于逐块拾取/隐藏）
 	var tilt := deg_to_rad(25.0)
@@ -447,6 +514,34 @@ func _build_robot() -> void:
 	_nearest_materials(carried)
 
 
+func _make_dust(parent: Node3D, pos: Vector3, amount: int) -> CPUParticles3D:
+	var p := CPUParticles3D.new()
+	p.position = pos
+	p.amount = amount
+	p.lifetime = 1.1
+	p.emitting = false
+	p.emission_shape = CPUParticles3D.EMISSION_SHAPE_BOX
+	p.emission_box_extents = Vector3(0.9, 0.08, 0.25)
+	p.direction = Vector3(0, 0.35, 1)
+	p.spread = 28.0
+	p.gravity = Vector3(0, 0.15, 0)
+	p.initial_velocity_min = 0.25
+	p.initial_velocity_max = 0.8
+	p.scale_amount_min = 0.35
+	p.scale_amount_max = 1.1
+	var mesh := QuadMesh.new()
+	mesh.size = Vector2(0.35, 0.35)
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = Color(0.72, 0.57, 0.36, 0.28)
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	mesh.material = mat
+	p.mesh = mesh
+	parent.add_child(p)
+	return p
+
+
 func _build_camera() -> void:
 	camera = Camera3D.new()
 	camera.fov = 36.0
@@ -454,6 +549,21 @@ func _build_camera() -> void:
 	camera.far = 700.0
 	camera.current = true
 	add_child(camera)
+
+
+func _build_post() -> void:
+	# 独立低层 CanvasLayer：只给 3D 画面加暗角/颗粒/暖调，HUD 保持干净。
+	var layer := CanvasLayer.new()
+	layer.layer = -1
+	add_child(layer)
+	var rect := ColorRect.new()
+	rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rect.color = Color.WHITE
+	var mat := ShaderMaterial.new()
+	mat.shader = load("res://shaders/cinematic.gdshader")
+	rect.material = mat
+	layer.add_child(rect)
 
 
 func _build_hud() -> void:
@@ -471,7 +581,7 @@ func _build_hud() -> void:
 		font.hinting = TextServer.HINTING_NONE
 	var anchors := {
 		"body": robot.find_child("Track_L", true, false),
-		"arm": arm_upper,
+		"arm": arm_lower,
 		"effector": effector,
 		"vision": vision_node,
 		"stack": stack_panels[2] if stack_panels.size() > 2 else chassis,
@@ -588,6 +698,20 @@ func _detach_panel(t: float) -> void:
 		print("[detach t=%.2f] grip=%s normal=%s heights=%s" % [t, str(grip.global_position), str(xf.basis.y.normalized()), str(heights)])
 
 
+func _ease(u: float, mode: String) -> float:
+	match mode:
+		"linear":
+			return u
+		"out":
+			return 1.0 - pow(1.0 - u, 3.0)
+		"in":
+			return u * u * u
+		"sine":
+			return 0.5 - 0.5 * cos(PI * u)
+		_:
+			return u * u * (3.0 - 2.0 * u)
+
+
 func _update_camera(t: float) -> void:
 	var sh: Dictionary = shots[shots.size() - 1]
 	for s in shots:
@@ -596,7 +720,7 @@ func _update_camera(t: float) -> void:
 			break
 	var span := maxf(float(sh["t1"]) - float(sh["t0"]), 0.001)
 	var u := clampf((t - float(sh["t0"])) / span, 0.0, 1.0)
-	var e := u * u * (3.0 - 2.0 * u)
+	var e := _ease(u, String(sh.get("ease", "smooth")))
 	var pos := camera.global_position
 	var target := Vector3.ZERO
 	var fov := camera.fov
@@ -607,17 +731,17 @@ func _update_camera(t: float) -> void:
 		pos = c + Vector3(cos(ang) * rad, lerpf(float(sh["h0"]), float(sh["h1"]), e), sin(ang) * rad)
 		target = sh["l"]
 		fov = float(sh["f"])
-	else:
-		var p0: Vector3 = sh["p0"]
-		var p1: Vector3 = sh["p1"]
-		pos = p0.lerp(p1, e)
-		if sh.get("follow", false):
-			var loff: Vector3 = sh["loff"]
-			target = grip.global_position + loff
+	elif sh.get("follow", false):
+		var loff: Vector3 = sh["loff"]
+		target = grip.global_position + loff
+		if sh.has("offset"):
+			pos = grip.global_position + Vector3(sh["offset"])
 		else:
-			var l0: Vector3 = sh["l0"]
-			var l1: Vector3 = sh["l1"]
-			target = l0.lerp(l1, e)
+			pos = Vector3(sh["p0"]).lerp(Vector3(sh["p1"]), e)
+		fov = float(sh["f"])
+	else:
+		pos = Vector3(sh["p0"]).lerp(Vector3(sh["p1"]), e)
+		target = Vector3(sh["l0"]).lerp(Vector3(sh["l1"]), e)
 		if sh.has("f0"):
 			fov = lerpf(float(sh["f0"]), float(sh["f1"]), e)
 		else:
@@ -641,7 +765,20 @@ func _update_hud(t: float) -> void:
 
 
 func apply_time(t: float) -> void:
-	robot.position.z = _chassis_z(t)
+	var z := _chassis_z(t)
+	robot.position.z = z
+	var moving := t > 66.2 and t < 67.8
+	var move_u := clampf((t - 66.2) / 1.6, 0.0, 1.0)
+	var move_env := sin(move_u * PI)
+	robot.position.y = sin(t * 18.0) * 0.008 * move_env
+	trailer.rotation.y = PI + sin((t - 66.2) * 5.0) * 0.018 * move_env
+	for w in wheel_nodes:
+		w.rotation.x = (z - SLOT_Z0) / 0.36
+	var tread_shift := (SLOT_Z0 - z) * 1.8
+	for item in track_treads:
+		var n: Node3D = item["node"]
+		n.position.z = wrapf(float(item["base"]) + tread_shift, -2.1, 2.1)
+	travel_dust.emitting = moving
 	for meta in cloud_meta:
 		var node3d: Node3D = meta["node"]
 		var base: Vector3 = meta["base"]
@@ -649,6 +786,10 @@ func apply_time(t: float) -> void:
 	var pose := _pose_at(t)
 	_apply_pose(pose)
 	_handle_events(t)
+	var impact := (t >= 57.0 and t < 57.35) or (t >= 74.9 and t < 75.25)
+	impact_dust.emitting = impact
+	if impact:
+		impact_dust.global_position = grip.global_position + Vector3(0, -0.55, 0)
 	_update_camera(t)
 	_update_hud(t)
 	last_time = t
