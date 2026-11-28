@@ -23,7 +23,7 @@
 - [x] 增加关键节点可见性审计。
 - [x] `preview_stills.ps1` 支持 `-Audit`。
 - [x] 经典镜头 + v1.4.0 画质的关键静帧复核。
-- [ ] 全量渲染、自动验收、发布 v1.4.1。
+- [x] 全量渲染、自动验收、发布 v1.4.1。
 
 ## 验收标准
 
@@ -38,4 +38,5 @@
 - [x] 经典镜头表与 v1.3.1 逐项一致；A/B contact sheet 复核通过。
 - [x] 全量：2630 帧 / 87.667s / 151,531,445 B；-16.0 LUFS / -2.0 dBTP；
   无 ≥0.15s 黑段；yuv420p / tv / BT.709 三标记齐全。
-- [ ] 仓库同步 + Release v1.4.1（待发布）。
+- [x] 仓库同步 + Release v1.4.1：MP4 sha256 `97f1f9…6415d`、
+  `poster.jpg` 423,900 B、`contact_sheet.jpg` 693,446 B；旧 MMR Release 已删除，TapArena 保留。
